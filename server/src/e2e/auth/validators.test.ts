@@ -3,7 +3,6 @@ import { default as request } from 'supertest';
 
 import { HttpStatus } from 'http-enums';
 
-import { ADMIN_SETTINGS, type IAdminSettings } from '@/settings/admin';
 import { USERNAME_CONSTRAINTS, PASSWORD_CONSTRAINTS } from '@/domains/auth';
 import { startTesting } from '../testHelpers';
 import { addAuthDependenciesForTesting } from './addAuthDependencies';
@@ -14,7 +13,6 @@ import type { TablesOwner } from '@/base/tablesOwner';
 
 let server: Express;
 let tablesOwner: TablesOwner;
-let adminSettings: IAdminSettings;
 
 const shortUsername = Array.from({ length: USERNAME_CONSTRAINTS.minLength - 1 })
   .map((): string => 'a')
@@ -38,7 +36,6 @@ describe('Auth endpoints with incorrect data', (): void => {
 
     server = dataForTesting.server;
     tablesOwner = dataForTesting.tablesOwner;
-    adminSettings = dataForTesting.container.resolve<IAdminSettings>(ADMIN_SETTINGS);
   });
 
   afterAll(async (): Promise<void> => {

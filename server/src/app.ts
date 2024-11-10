@@ -22,7 +22,7 @@ import type { ILogger } from './logger';
 export const APPLICATION = getUniqueId();
 
 export class Application {
-  private readonly server: Express;
+  private readonly _server: Express;
 
   private readonly controllers: Iterable<Controller>;
   private readonly serverSettings: IServerSettings;
@@ -40,11 +40,11 @@ export class Application {
     this.middlewares = (container[MIDDLEWARES] ?? []) as Iterable<Middleware>;
     this.controllers = (container[CONTROLLERS] ?? []) as Iterable<Controller>;
 
-    this.server = this.getSetServer();
+    this._server = this.getSetServer();
   }
 
-  public get express(): Express {
-    return this.server;
+  public get server(): Express {
+    return this._server;
   }
 
   public async start(): Promise<void> {

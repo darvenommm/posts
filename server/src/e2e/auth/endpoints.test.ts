@@ -39,9 +39,7 @@ describe('Auth endpoints', (): void => {
   });
 
   test('sign out', async (): Promise<void> => {
-    const testSessionCookie = 'session=testSession; Path=/; HttpOnly';
-    const response = await request(server).post('/auth/sign-out').set('Cookie', testSessionCookie);
-
+    const response = await request(server).post('/auth/sign-out');
     expect(response.status).toBe(HttpStatus.NO_CONTENT);
 
     const cookies = response.headers['set-cookie'] as unknown as string[];

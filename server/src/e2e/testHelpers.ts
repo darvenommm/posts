@@ -1,6 +1,6 @@
 import { asClass, asValue, createContainer } from 'awilix';
 
-import { addBaseDependencies, CONTROLLERS, LOGGER, MIDDLEWARES, TABLES_OWNERS } from '@/container';
+import { addBaseDependencies, CONTROLLERS, MIDDLEWARES, TABLES_OWNERS } from '@/container';
 
 import { DATABASE_SETTINGS } from '@/settings/database';
 import { TestDatabaseSettings } from '@/settings/testDatabase';
@@ -10,7 +10,6 @@ import { DATABASE_TABLES_OWNER } from '@/database';
 import type { AwilixContainer } from 'awilix';
 import type { Express } from 'express';
 import type { TablesOwner } from '@/base/tablesOwner';
-import { createLogger } from 'winston';
 
 interface DataForTesting {
   readonly server: Express;
@@ -41,6 +40,6 @@ export const startTesting = async (register: RegisterCallback): Promise<DataForT
   return {
     container,
     tablesOwner,
-    server: container.resolve<Application>(APPLICATION).express,
+    server: container.resolve<Application>(APPLICATION).server,
   };
 };

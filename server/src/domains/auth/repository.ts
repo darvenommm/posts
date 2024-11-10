@@ -5,7 +5,7 @@ import { getUniqueId } from '@/helpers';
 import { DATABASE, type IDatabase } from '@/database';
 import { EXTRA_SETTINGS, type IExtraSettings } from '@/settings/extra';
 
-import type { IUser, UserCreatingData } from './types';
+import { Role, type IUser, type UserCreatingData } from './types';
 import type { SignUpDTO } from './dtos';
 import type { IContainer } from '@/container';
 
@@ -30,11 +30,11 @@ export class AuthRepository implements IAuthRepository {
   public async addUser({ email, username, password }: SignUpDTO): Promise<IUser> {
     const sql = this.database.connection;
     const hashedPassword = await bcrypt.hash(password, this.extraSettings.saltRounds);
-    const userData: UserCreatingData & { role: null } = {
+    const userData: UserCreatingData = {
       email,
       username,
       hashedPassword,
-      role: null,
+      role: Role.USER,
     } as const;
 
     await sql`INSERT INTO posts.users ${sql(userData)}`;

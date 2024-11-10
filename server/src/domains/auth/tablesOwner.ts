@@ -1,6 +1,6 @@
 import { default as bcrypt } from 'bcrypt';
 
-import { TablesCreator } from '@/base/tableCreator';
+import { TablesOwner } from '@/base/tablesOwner';
 import { getUniqueId } from '@/helpers';
 import { USERNAME_CONSTRAINTS } from './constraints';
 import { Role, type IRole } from './types';
@@ -12,9 +12,9 @@ import type { Sql } from 'postgres';
 import type { IContainer } from '@/container';
 import type { UserCreatingDataWithRole } from './types';
 
-export const AUTH_TABLES_CREATOR = getUniqueId();
+export const AUTH_TABLES_OWNER = getUniqueId();
 
-export class AuthTablesCreator extends TablesCreator {
+export class AuthTablesOwner extends TablesOwner {
   private readonly MAX_ROLE_LENGTH = 32;
   private readonly MAX_EMAIL_LENGTH = 320;
   private readonly MAX_BCRYPT_LENGTH = 72;
@@ -36,6 +36,10 @@ export class AuthTablesCreator extends TablesCreator {
       await this.addRolesIfNeed(sql);
       await this.addAdminUserIfNeed(sql);
     });
+  }
+
+  public async clean(): Promise<void> {
+    await this.database.connection`DELETE FROM posts.users WHERE role != ${Role.ADMIN};`;
   }
 
   private async createTables(sql: Sql): Promise<void> {

@@ -15,3 +15,20 @@ services:
       retries: 120
     ports:
       - ${DB_PORT}:5432
+
+  fake-database:
+    container_name: news-fake-database
+    image: postgres:latest
+    restart: always
+    shm_size: 256mb
+    environment:
+      - POSTGRES_DB=${FAKE_DB_NAME}
+      - POSTGRES_USER=${FAKE_DB_USERNAME}
+      - POSTGRES_PASSWORD=${FAKE_DB_PASSWORD}
+    healthcheck:
+      test: pg_isready -d ${FAKE_DB_NAME} -U ${FAKE_DB_USERNAME} -h fake-database
+      interval: 2s
+      timeout: 3s
+      retries: 120
+    ports:
+      - ${FAKE_DB_PORT}:5432

@@ -1,6 +1,6 @@
 import { asClass } from 'awilix';
 
-import { AUTH_TABLES_CREATOR, AuthTablesCreator } from './tablesCreator';
+import { AUTH_TABLES_OWNER, AuthTablesOwner } from './tablesOwner';
 import { AUTH_SERVICE, AuthService } from './service';
 import { AUTH_REPOSITORY, AuthRepository } from './repository';
 import { AUTH_MIDDLEWARE, AuthMiddleware } from './middleware';
@@ -13,7 +13,7 @@ import type { AwilixContainer } from 'awilix';
 
 export const addAuthDependencies = (container: AwilixContainer): void => {
   container.register({
-    [AUTH_TABLES_CREATOR]: asClass(AuthTablesCreator).singleton(),
+    [AUTH_TABLES_OWNER]: asClass(AuthTablesOwner).singleton(),
     [AUTH_SERVICE]: asClass(AuthService).singleton(),
     [AUTH_REPOSITORY]: asClass(AuthRepository).singleton(),
     [AUTH_MIDDLEWARE]: asClass(AuthMiddleware).singleton(),

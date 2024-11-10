@@ -1,13 +1,12 @@
 import { createContainer } from 'awilix';
 
-import { addBaseDependencies, addCompositeDependencies } from './container';
+import { addBaseDependencies, addCompositeDependencies, LOGGER } from './container';
 import { addPostsDependencies } from './domains/posts';
 import { addAuthDependencies } from './domains/auth';
+import { APPLICATION } from './app';
 
-import { APPLICATION, type Application } from './app';
-import { DATABASE_TABLES_CREATOR } from './database';
-
-import type { TablesCreator } from './base/tableCreator';
+import type { Application } from './app';
+import type { Logger } from 'winston';
 
 const container = createContainer({ strict: true });
 addBaseDependencies(container);
@@ -15,12 +14,12 @@ addAuthDependencies(container);
 addPostsDependencies(container);
 addCompositeDependencies(container);
 
-try {
-  await container.resolve<TablesCreator>(DATABASE_TABLES_CREATOR).create();
+const logger = container.resolve<Logger>(LOGGER);
 
-  container.resolve<Application>(APPLICATION).start();
+try {
+  await container.resolve<Application>(APPLICATION).start();
 } catch (error) {
-  console.error(error);
+  logger.error(error);
 } finally {
   await container.dispose();
 }

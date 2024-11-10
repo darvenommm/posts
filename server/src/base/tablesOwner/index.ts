@@ -1,0 +1,1 @@
+export { TablesOwner } from './tablesOwner';

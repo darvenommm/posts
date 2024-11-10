@@ -1,13 +1,13 @@
-import { TablesCreator } from '@/base/tableCreator';
+import { TablesOwner } from '@/base/tablesOwner';
 import { getUniqueId } from '@/helpers';
 import { DATABASE, type IDatabase } from '@/database';
 import { TITLE_CONSTRAINTS, TEXT_CONSTRAINTS } from './constraints';
 
 import type { IContainer } from '@/container';
 
-export const POSTS_TABLES_CREATOR = getUniqueId();
+export const POSTS_TABLES_OWNER = getUniqueId();
 
-export class PostsTablesCreator extends TablesCreator {
+export class PostsTablesOwner extends TablesOwner {
   private readonly database: IDatabase;
 
   public constructor(container: IContainer) {
@@ -32,5 +32,9 @@ export class PostsTablesCreator extends TablesCreator {
       CREATE UNIQUE INDEX IF NOT EXISTS "indexPostsSlug" ON posts.posts USING BTREE (slug);
       CREATE INDEX IF NOT EXISTS "indexPostsCreatedAt" ON posts.posts USING BTREE ("createdAt");
     `);
+  }
+
+  public async clean(): Promise<void> {
+    await this.database.connection`DELETE FROM posts.posts;`;
   }
 }

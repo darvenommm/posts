@@ -1,2 +1,2 @@
-export * from './getUnique';
-export * from './createSlug';
+export { getUniqueId } from './getUnique/getUnique';
+export { createSlug } from './createSlug/createSlug';

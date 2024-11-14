@@ -1,0 +1,31 @@
+$form-width: 800px;
+
+.form-outer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 0 auto;
+
+  min-height: 100dvh;
+}
+
+.form-inner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background-color: var(--secondary-bg);
+
+  min-width: $form-width;
+  padding: 20px;
+  margin: 20px;
+
+  @media (max-width: ($form-width + 20px)) {
+    min-width: auto;
+    width: 100%;
+    margin: 10px;
+  }
+}

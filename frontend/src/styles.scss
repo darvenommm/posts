@@ -1,0 +1,39 @@
+:root {
+  --light-primary-bg: #b1eeee;
+  --light-secondary-bg: #e1f1f0;
+  --light-border-color: #9fe2dd;
+  --light-primary-text-color: #000000;
+
+  --dark-primary-bg: #141414;
+  --dark-secondary-bg: #3f3f3f;
+  --dark-border-color: #181616;
+  --dark-primary-text-color: #ffffff;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  --primary-bg: var(--dark-primary-bg);
+  --secondary-bg: var(--dark-secondary-bg);
+  --border-color: var(--dark-border-color);
+  --primary-text-color: var(--dark-primary-text-color);
+}
+
+[data-theme="light"] {
+  --primary-bg: var(--light-primary-bg);
+  --secondary-bg: var(--light-secondary-bg);
+  --border-color: var(--light-border-color);
+  --primary-text-color: var(--light-primary-text-color);
+}
+
+body {
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}

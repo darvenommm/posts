@@ -29,6 +29,11 @@ export class AuthService implements IAuthService {
   }
 
   public async signUp(addUserData: SignUpDTO): Promise<UserDataForEntry> {
+    const userById = await this.authRepository.getUserByField('id', addUserData.id);
+    if (userById) {
+      return { session: userById.session };
+    }
+
     const [isExistedByEmail, isExistedByUsername] = await Promise.all([
       this.authRepository.getUserByField('email', addUserData.email),
       this.authRepository.getUserByField('username', addUserData.username),

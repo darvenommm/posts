@@ -36,6 +36,11 @@ describe('Auth endpoints', (): void => {
     const cookies = response.headers['set-cookie'] as unknown as string[];
     const hasSession = cookies.some((cookie): boolean => cookie.startsWith('session'));
     expect(hasSession).toBe(true);
+
+    // for (let i = 0; i < 3; ++i) {
+    //   const response = await request(server).post('/auth/sign-up').send(signUpData);
+    //   expect(response.status).toBe(HttpStatus.CREATED);
+    // }
   });
 
   test('sign out', async (): Promise<void> => {

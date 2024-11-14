@@ -11,6 +11,16 @@ export const SIGN_UP_VALIDATOR = getUniqueId();
 export class SignUpValidator extends Validator {
   protected getValidators(): ValidationChain[] {
     return checkSchema({
+      id: {
+        trim: true,
+        notEmpty: {
+          errorMessage: 'The id cannot be empty',
+        },
+        isUUID: {
+          options: 4,
+          errorMessage: 'The id should be an uuid',
+        },
+      },
       email: {
         trim: true,
         escape: true,

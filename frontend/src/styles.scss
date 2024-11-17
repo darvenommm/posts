@@ -1,3 +1,25 @@
+@font-face {
+  font-family: "Roboto", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src:
+    local("Roboto"),
+    url("/fonts/roboto/Roboto-Regular.woff2") format("woff2"),
+    url("/fonts/roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto", serif;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src:
+    local("Roboto"),
+    url("/fonts/roboto/Roboto-Bold.woff2") format("woff2"),
+    url("/fonts/roboto/Roboto-Bold.ttf") format("truetype");
+}
+
 :root {
   --light-primary-bg: #b1eeee;
   --light-secondary-bg: #e1f1f0;
@@ -6,8 +28,11 @@
 
   --dark-primary-bg: #141414;
   --dark-secondary-bg: #3f3f3f;
-  --dark-border-color: #181616;
+  --dark-border-color: #cfcfcf;
   --dark-primary-text-color: #ffffff;
+
+  --error-color: #fa1717;
+  --extra-color: #60b6a3;
 }
 
 html {
@@ -29,6 +54,9 @@ html {
 }
 
 body {
+  font-family: "Roboto";
+  font-size: 16px;
+
   margin: 0;
 }
 
@@ -36,4 +64,15 @@ body {
 *::before,
 *::after {
   box-sizing: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+label,
+button {
+  cursor: pointer;
 }

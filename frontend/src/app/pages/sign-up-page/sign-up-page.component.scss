@@ -1,0 +1,30 @@
+:host {
+  width: 100%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-errors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.control-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}

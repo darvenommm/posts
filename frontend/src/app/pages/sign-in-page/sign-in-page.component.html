@@ -1,1 +1,26 @@
-<p>sign-in-page works!</p>
+<form class="form" [formGroup]="formFields" (submit)="onSubmit()">
+  @if (formErrors.length) {
+    <div class="form-errors">
+      <app-form-errors [errors]="formErrors" />
+    </div>
+  }
+  <div>
+    <div class="control-container">
+      <label for="emailOrUsername">Email or username:</label>
+      <app-input inputId="email" formControlName="emailOrUsername" [valid]="isValid('emailOrUsername')" />
+    </div>
+    <app-form-errors [errors]="getEmailOrUsernameErrorsMessage()" />
+  </div>
+  <div>
+    <div class="control-container">
+      <label for="password">Password:</label>
+      <app-input inputId="password" formControlName="password" [valid]="isValid('password')" />
+    </div>
+    <app-form-errors [errors]="getPasswordErrorsMessage()" />
+  </div>
+  <app-button type="submit" [disabled]="formFields.invalid || isSubmitting">Submit</app-button>
+  <div class="links">
+    <span>You're not registered?</span>
+    <app-link [path]="['/auth/sign-up']" parentClass="link">Sign Up</app-link>
+  </div>
+</form>

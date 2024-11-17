@@ -1,53 +1,33 @@
 <form class="form" [formGroup]="formFields" (submit)="onSubmit()">
-  @if (requestErrors.length !== 0) {
-    @for (error of requestErrors; track error) {
-      <p>error</p>
-    }
+  @if (formErrors.length) {
+    <div class="form-errors">
+      <app-form-errors [errors]="formErrors" />
+    </div>
   }
-  <div class="email-container">
-    <label for="email">Email: </label>
-    <input id="email" type="text" formControlName="email">
-    <div class="errors-container">
-      @if (hasError('email', 'required')) {
-        <p>Email is required</p>
-      }
-      @if (hasError('email', 'email')) {
-        <p>Invalid email format</p>
-      }
+  <div>
+    <div class="control-container">
+      <label for="email">Email:</label>
+      <app-input inputId="email" formControlName="email" [valid]="isValid('email')" />
     </div>
+    <app-form-errors [errors]="getEmailErrorsMessage()" />
   </div>
-  <div class="username-container">
-    <label for="username">Username: </label>
-    <input id="username" type="text" formControlName="username">
-    <div class="errors-container">
-      @if (hasError('username', 'required')) {
-        <p>Username is required</p>
-      }
-      @if (hasError('username', 'minlength')) {
-        <p>Username must be at least 6 characters.</p>
-      }
-      @if (hasError('username', 'maxlength')) {
-        <p>Username cannot exceed 32 characters.</p>
-      }
-      @if (hasError('username', 'pattern')) {
-        <p>Username contains invalid characters.</p>
-      }
+  <div>
+    <div class="control-container">
+      <label for="username">Username:</label>
+      <app-input inputId="username" formControlName="username" [valid]="isValid('username')" />
     </div>
+    <app-form-errors [errors]="getUsernameErrorsMessage()" />
   </div>
-  <div class="password-container">
-    <label for="password">Password: </label>
-    <input id="password" type="password" formControlName="password">
-    <div class="errors-container">
-      @if (hasError('password', 'required')) {
-        <p>Password is required</p>
-      }
-      @if (hasError('password', 'minlength')) {
-        <p>Password must be at least 6 characters.</p>
-      }
-      @if (hasError('password', 'maxlength')) {
-        <p>Password cannot exceed 32 characters.</p>
-      }
+  <div>
+    <div class="control-container">
+      <label for="password">Password:</label>
+      <app-input inputId="password" formControlName="password" [valid]="isValid('password')" />
     </div>
+    <app-form-errors [errors]="getPasswordErrorsMessage()" />
   </div>
-  <button type="submit" [disabled]="formFields.invalid || isSubmitting">Submit</button>
+  <app-button type="submit" [disabled]="formFields.invalid || isSubmitting">Submit</app-button>
+  <div class="links">
+    <span>You're registered?</span>
+    <app-link [path]="['/auth/sign-in']" parentClass="link">Sign In</app-link>
+  </div>
 </form>

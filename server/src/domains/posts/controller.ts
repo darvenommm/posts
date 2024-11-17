@@ -36,6 +36,7 @@ export class PostsController extends Controller {
   private readonly updateValidator: Validator;
   private readonly pagesPaginationValidator: Validator;
   private readonly creatorOrAdminGuard: Guard;
+  private readonly isAuthenticatedGuard: Guard;
 
   public constructor(container: IContainer) {
     super();
@@ -44,10 +45,9 @@ export class PostsController extends Controller {
     this.addValidator = container[ADD_VALIDATOR] as Validator;
     this.updateValidator = container[UPDATE_VALIDATOR] as Validator;
     this.pagesPaginationValidator = container[PAGES_PAGINATION_VALIDATOR] as Validator;
-    this.creatorOrAdminGuard = container[CREATOR_OR_ADMIN_GUARD] as Guard;
 
-    const isAuthenticatedGuard = container[IS_AUTHENTICATED_GUARD] as IsAuthenticatedGuard;
-    this.outerMiddlewares.push(isAuthenticatedGuard.getGuard());
+    this.creatorOrAdminGuard = container[CREATOR_OR_ADMIN_GUARD] as Guard;
+    this.isAuthenticatedGuard = container[IS_AUTHENTICATED_GUARD] as IsAuthenticatedGuard;
   }
 
   protected setUpRouter(): void {
@@ -71,7 +71,10 @@ export class PostsController extends Controller {
       path: '',
       handler: this.add,
       handlerThis: this,
-      middlewares: this.addValidator.getValidationChain(),
+      middlewares: [
+        this.isAuthenticatedGuard.getGuard(),
+        ...this.addValidator.getValidationChain(),
+      ],
     });
 
     this.addRoute({
@@ -80,6 +83,7 @@ export class PostsController extends Controller {
       handler: this.update,
       handlerThis: this,
       middlewares: [
+        this.isAuthenticatedGuard.getGuard(),
         this.creatorOrAdminGuard.getGuard(),
         ...this.updateValidator.getValidationChain(),
       ],
@@ -90,7 +94,7 @@ export class PostsController extends Controller {
       path: '/:slug',
       handler: this.remove,
       handlerThis: this,
-      middlewares: [this.creatorOrAdminGuard.getGuard()],
+      middlewares: [this.isAuthenticatedGuard.getGuard(), this.creatorOrAdminGuard.getGuard()],
     });
   }
 

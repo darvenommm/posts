@@ -1,0 +1,10 @@
+<input
+  [class]="{ input: true, invalid: !(valid()) }"
+  [id]="inputId()"
+  type="text"
+  [value]="value"
+  [placeholder]="placeholder()"
+  (input)="onInput($event)"
+  (blur)="onBlur()"
+  [disabled]="disabled"
+/>

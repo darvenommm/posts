@@ -19,3 +19,8 @@ export interface CreatingPostData {
   readonly title: string;
   readonly text: string;
 }
+
+export interface PostsPages {
+  readonly pagesCount: number;
+  readonly posts: Post[];
+}

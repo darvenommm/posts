@@ -1,0 +1,23 @@
+@switch (state) {
+  @case ('loading') {
+    <p>Loading...</p>
+  }
+
+  @case('error') {
+    <p>Error!</p>
+  }
+
+  @case('success') {
+    @if (posts.length) {
+      <ul>
+        @for (post of posts; track post.id) {
+          <li>
+            <p>{{ post.title }}</p>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p>There aren't posts</p>
+    }
+  }
+}

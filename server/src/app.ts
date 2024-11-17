@@ -65,7 +65,13 @@ export class Application {
     const server = express();
 
     server.use(helmet());
-    server.use(cors());
+    server.use(
+      cors({
+        origin: 'http://localhost:4200',
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization'],
+      }),
+    );
     server.use(express.json());
     server.use(cookieParser(this.extraSettings.secret));
 

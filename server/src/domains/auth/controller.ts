@@ -56,6 +56,13 @@ export class AuthController extends Controller {
       handler: this.signOut,
       handlerThis: this,
     });
+
+    this.addRoute({
+      method: HttpMethod.GET,
+      path: '/is-auth',
+      handler: this.isAuthenticated,
+      handlerThis: this,
+    });
   }
 
   public async signUp(request: Request, response: Response<void>): Promise<void> {
@@ -78,6 +85,10 @@ export class AuthController extends Controller {
     this.clearCookies(response);
 
     response.status(HttpStatus.NO_CONTENT).end();
+  }
+
+  public async isAuthenticated(request: Request, response: Response<boolean>): Promise<void> {
+    response.status(HttpStatus.OK).send(Boolean(request.user));
   }
 
   private setSessionIntoCookies(response: Response, { session }: CookiesData): void {

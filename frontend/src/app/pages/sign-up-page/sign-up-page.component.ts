@@ -1,107 +1,155 @@
 import { Component, inject } from '@angular/core';
-import { FormGroup, ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { v4 as createUUID } from 'uuid';
 
 import { AuthService, SignUpDTO } from '@entities/auth';
+import {
+  USERNAME_CONSTRAINTS,
+  PASSWORD_CONSTRAINTS,
+  EMAIL_CONSTRAINTS,
+} from '@shared/constraints/auth';
+import { InputComponent } from '@shared/ui/form/input';
+import { FormErrorsComponent } from '@shared/ui/form/form-errors';
+import { ButtonComponent } from '@shared/ui/button';
+import { LinkComponent } from '@shared/ui/link';
+import { BaseForm } from '@shared/base/form';
+import { HttpErrorResponse } from '@angular/common/http';
 
-type FieldsName = 'email' | 'username' | 'password';
-type ErrorsName = 'required' | 'email' | 'minlength' | 'maxlength' | 'pattern';
+interface SignUpForm {
+  email: FormControl<string>;
+  username: FormControl<string>;
+  password: FormControl<string>;
+}
+
+type FieldsName = keyof SignUpForm;
+type ErrorsName = 'required' | 'minlength' | 'maxlength' | 'pattern';
 
 @Component({
-  selector: 'sign-up-page',
+  selector: 'app-sign-up-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
-  providers: [AuthService],
+  imports: [
+    ReactiveFormsModule,
+    InputComponent,
+    FormErrorsComponent,
+    ButtonComponent,
+    LinkComponent,
+  ],
   templateUrl: './sign-up-page.component.html',
   styleUrl: './sign-up-page.component.scss',
 })
-export class SignUpPageComponent {
+export class SignUpPageComponent extends BaseForm<FieldsName, ErrorsName> {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   private readonly userId = createUUID();
-
-  public readonly formFields: FormGroup;
   public isSubmitting = false;
-  public requestErrors: string[] = [];
+  public formErrors: string[] = [];
 
-  public constructor(formBuilder: FormBuilder) {
-    this.formFields = formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
+  public readonly formFields: FormGroup<SignUpForm> = this.formBuilder.group(
+    {
+      email: ['', [Validators.required, Validators.pattern(EMAIL_CONSTRAINTS.pattern)]],
       username: [
         '',
         [
           Validators.required,
-          Validators.minLength(6),
-          Validators.maxLength(32),
-          Validators.pattern(/^[a-zA-Z_][a-zA-Z0-9_]{5,31}$/),
+          Validators.minLength(USERNAME_CONSTRAINTS.minLength),
+          Validators.maxLength(USERNAME_CONSTRAINTS.maxLength),
+          Validators.pattern(USERNAME_CONSTRAINTS.pattern),
         ],
       ],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(32)]],
-    });
-  }
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(PASSWORD_CONSTRAINTS.minLength),
+          Validators.maxLength(PASSWORD_CONSTRAINTS.maxLength),
+        ],
+      ],
+    },
+    {},
+  );
 
-  public hasError(fieldName: FieldsName, error: ErrorsName): boolean {
-    const field = this.formFields.get(fieldName);
+  public override onSubmit(): void {
+    super.onSubmit();
 
-    if (field === null) {
-      return true;
-    }
-
-    return field.hasError(error) && (field.dirty || field.touched);
-  }
-
-  public onSubmit(): void {
-    if (this.formFields.invalid) {
-      return this.formFields.markAllAsTouched();
-    }
-
-    this.formFields.patchValue({
-      email: this.getTrimmedField('email'),
-      username: this.getTrimmedField('username'),
-    });
-    this.formFields.updateValueAndValidity({ emitEvent: false });
+    this.trimFieldsAndCheckValidation();
 
     if (this.formFields.valid) {
       console.log('Submitted form:', this.formFields.getRawValue());
-
-      this.isSubmitting = true;
       this.sendUserData();
     }
   }
 
+  public getEmailErrorsMessage(): Record<string, boolean> {
+    return {
+      'Email is required': this.hasError('email', 'required'),
+      'Invalid email format': this.hasError('email', 'pattern'),
+    };
+  }
+
+  public getUsernameErrorsMessage(): Record<string, boolean> {
+    const minUsernameLengthMessage = `Username must be at least ${USERNAME_CONSTRAINTS.minLength} characters`;
+    const maxUsernameLengthMessage = `Username cannot exceed ${USERNAME_CONSTRAINTS.maxLength} characters`;
+    const incorrectUsernamePatternMessage = `Username contains invalid characters (${USERNAME_CONSTRAINTS.beautyPattern})`;
+
+    return {
+      'Username is required': this.hasError('username', 'required'),
+      [minUsernameLengthMessage]: this.hasError('username', 'minlength'),
+      [maxUsernameLengthMessage]: this.hasError('username', 'maxlength'),
+      [incorrectUsernamePatternMessage]: this.hasError('username', 'pattern'),
+    };
+  }
+
+  public getPasswordErrorsMessage(): Record<string, boolean> {
+    const minPasswordLengthMessage = `Password must be at least ${PASSWORD_CONSTRAINTS.minLength} characters`;
+    const maxPasswordLengthMessage = `Password cannot exceed ${PASSWORD_CONSTRAINTS.maxLength} characters`;
+
+    return {
+      'Password is required': this.hasError('password', 'required'),
+      [minPasswordLengthMessage]: this.hasError('password', 'minlength'),
+      [maxPasswordLengthMessage]: this.hasError('password', 'maxlength'),
+    };
+  }
+
+  protected trimFieldsAndCheckValidation(): void {
+    const { email, username } = this.formFields.controls;
+    this.formFields.patchValue({
+      email: email.value.trim(),
+      username: username.value.trim(),
+    });
+    this.formFields.updateValueAndValidity({ emitEvent: false });
+  }
+
   private sendUserData(): void {
-    // Email and username should be trimmed before sending in the onSubmit!
+    this.isSubmitting = true;
+
+    const { email, username, password } = this.formFields.controls;
+
+    // Email and username should be checked by on trimming before sending!
     const signUpData: SignUpDTO = {
       id: this.userId,
-      email: this.getField('email'),
-      username: this.getField('username'),
-      password: this.getField('password'),
+      email: email.value,
+      username: username.value,
+      password: password.value,
     } as const;
 
     this.authService.signUp(signUpData).subscribe({
       next: (): void => {
-        this.router.navigate(['/posts']);
-      },
-      error: (errors): void => {
         this.isSubmitting = false;
-        console.error(errors);
+        this.router.navigate(['/']);
+      },
+      error: (error): void => {
+        const internalError = ['Internal server error'];
+
+        if (error instanceof HttpErrorResponse) {
+          this.formErrors = error.error?.errors ?? internalError;
+        } else {
+          this.formErrors = internalError;
+        }
+
+        this.isSubmitting = false;
       },
     });
-  }
-
-  private getField(fieldName: FieldsName): string {
-    const field = this.formFields.get(fieldName);
-
-    if (!field) {
-      throw new Error('Not found field by name');
-    }
-
-    return field.getRawValue();
-  }
-
-  private getTrimmedField(fieldName: FieldsName): string {
-    return this.getField(fieldName).trim();
   }
 }

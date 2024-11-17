@@ -44,7 +44,7 @@ export class AuthService implements IAuthService {
       throw new HttpError(
         'User is existed in the system with this email or username',
         HttpStatus.UNPROCESSABLE_ENTITY,
-        ['THe email or username is busy with some user :('],
+        ['The email or username is busy with some user :('],
       );
     }
 

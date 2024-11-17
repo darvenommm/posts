@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'form-page',
+  selector: 'app-form-page',
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './form-page.component.html',

@@ -5,6 +5,7 @@ import { SignUpPageComponent } from '@pages/sign-up-page';
 import { SignInPageComponent } from '@pages/sign-in-page';
 import { NotFoundPageComponent } from '@pages/not-found-page';
 import { PostsComponent } from '@pages/posts';
+import { authGuard } from '@entities/auth';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,7 @@ export const routes: Routes = [
     path: 'posts',
     component: PostsComponent,
     title: 'posts',
+    // canActivate: [authGuard],
   },
   {
     path: 'auth',

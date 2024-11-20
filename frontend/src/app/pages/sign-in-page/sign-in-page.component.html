@@ -1,26 +1,73 @@
-<form class="form" [formGroup]="formFields" (submit)="onSubmit()">
-  @if (formErrors.length) {
-    <div class="form-errors">
-      <app-form-errors [errors]="formErrors" />
+<main class="app-center">
+  <form class="form app-center__inner" [formGroup]="formFields" (submit)="onSubmit()">
+    @if (formErrors.length) {
+    <div class="app-errors__errors">
+      @for (errorMessage of formErrors; track errorMessage) {
+      <p class="app-errors__error">{{ errorMessage }}</p>
+      }
     </div>
-  }
-  <div>
+    }
     <div class="control-container">
-      <label for="emailOrUsername">Email or username:</label>
-      <app-input inputId="email" formControlName="emailOrUsername" [valid]="isValid('emailOrUsername')" />
+      <div class="app-control">
+        <label for="email-or-username">Email or username:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('emailOrUsername') }"
+          id="email-or-username"
+          formControlName="emailOrUsername"
+          type="text"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('emailOrUsername', 'required')) {
+        <p class="app-errors__error">Username or email is required</p>
+        } @if (hasError('emailOrUsername', 'minlength')) {
+        <p class="app-errors__error">
+          Username must be at least {{ USERNAME_CONSTRAINTS.minLength }} characters
+        </p>
+        } @if (hasError('emailOrUsername', 'maxlength')) {
+        <p class="app-errors__error">
+          Username cannot exceed {{ USERNAME_CONSTRAINTS.maxLength }} characters
+        </p>
+        } @if (hasError('emailOrUsername', 'pattern')) {
+        <p class="app-errors__error">
+          @if (isEmailOrUsernameEqualedEmail()) { Email has invalid format } @else { Username
+          contains invalid characters ({{ USERNAME_CONSTRAINTS.beautyPattern }}) }
+        </p>
+        }
+      </div>
     </div>
-    <app-form-errors [errors]="getEmailOrUsernameErrorsMessage()" />
-  </div>
-  <div>
     <div class="control-container">
-      <label for="password">Password:</label>
-      <app-input inputId="password" formControlName="password" [valid]="isValid('password')" />
+      <div class="app-control">
+        <label for="password">Password:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('password') }"
+          id="password"
+          formControlName="password"
+          type="password"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('password', 'required')) {
+        <p class="app-errors__error">Password is required</p>
+        } @if (hasError('password', 'minlength')) {
+        <p class="app-errors__error">
+          Password must be at least {{ PASSWORD_CONSTRAINTS.minLength }} characters
+        </p>
+        } @if (hasError('password', 'maxlength')) {
+        <p class="app-errors__error">
+          Password cannot exceed {{ PASSWORD_CONSTRAINTS.maxLength }} characters
+        </p>
+        }
+      </div>
     </div>
-    <app-form-errors [errors]="getPasswordErrorsMessage()" />
-  </div>
-  <app-button type="submit" [disabled]="formFields.invalid || isSubmitting">Submit</app-button>
-  <div class="links">
-    <span>You're not registered?</span>
-    <app-link [path]="['/auth/sign-up']" parentClass="link">Sign Up</app-link>
-  </div>
-</form>
+    <button class="app-button" type="submit" [disabled]="formFields.invalid || isSubmitting">
+      Sign in
+    </button>
+    <div class="links">
+      <span>You're registered?</span>
+      <a class="app-link" [routerLink]="['/auth/sign-up']">Sign Up</a>
+    </div>
+  </form>
+</main>

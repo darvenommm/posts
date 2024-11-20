@@ -1,42 +1,58 @@
 import { Routes } from '@angular/router';
 
-import { FormPageComponent } from '@pages/form-page';
-import { SignUpPageComponent } from '@pages/sign-up-page';
-import { SignInPageComponent } from '@pages/sign-in-page';
+import { CreatePostPageComponent } from '@pages/create-post-page';
 import { NotFoundPageComponent } from '@pages/not-found-page';
-import { PostsComponent } from '@pages/posts';
+import { PostPageComponent } from '@pages/post-page';
+import { PostsPageComponent } from '@pages/posts-page';
+import { SignInPageComponent } from '@pages/sign-in-page';
+import { SignUpPageComponent } from '@pages/sign-up-page';
 import { authGuard } from '@entities/auth';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'posts',
     pathMatch: 'full',
-  },
-  {
-    path: 'posts',
-    component: PostsComponent,
-    title: 'posts',
-    // canActivate: [authGuard],
+    redirectTo: 'posts',
   },
   {
     path: 'auth',
-    component: FormPageComponent,
     children: [
       {
         path: 'sign-up',
         component: SignUpPageComponent,
-        title: 'Sign Up',
+        title: 'Sign up',
       },
       {
         path: 'sign-in',
         component: SignInPageComponent,
-        title: 'Sign In',
+        title: 'Sign in',
       },
+    ],
+  },
+  {
+    path: 'posts',
+    children: [
+      {
+        path: '',
+        component: PostsPageComponent,
+        title: 'Posts',
+      },
+      {
+        path: 'create',
+        component: CreatePostPageComponent,
+        title: 'Create post',
+        canActivate: [authGuard],
+      },
+      // {
+      //   path: ':postSlug',
+      //   component: PostPageComponent,
+      //   title: 'Post',
+      // },
     ],
   },
   {
     path: '**',
     component: NotFoundPageComponent,
+    title: 'Not found page',
   },
 ];

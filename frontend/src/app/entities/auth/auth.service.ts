@@ -12,19 +12,19 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly authUrl = `${environment.apiUrl}/auth`;
 
-  public signUp(dto: SignUpDTO): Observable<void> {
-    return this.http.post<void>(`${this.authUrl}/sign-up`, dto, { withCredentials: true });
+  public signUp(signUpDTO: SignUpDTO): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/sign-up`, signUpDTO);
   }
 
-  public signIn(dto: SignInDTO): Observable<void> {
-    return this.http.post<void>(`${this.authUrl}/sign-in`, dto, { withCredentials: true });
+  public signIn(signInDTO: SignInDTO): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/sign-in`, signInDTO);
   }
 
   public signOut(): Observable<void> {
-    return this.http.post<void>(`${this.authUrl}/sign-out`, null, { withCredentials: true });
+    return this.http.post<void>(`${this.authUrl}/sign-out`, null);
   }
 
   public isAuthenticated(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.authUrl}/is-auth`, { withCredentials: true });
+    return this.http.get<boolean>(`${this.authUrl}/is-auth`);
   }
 }

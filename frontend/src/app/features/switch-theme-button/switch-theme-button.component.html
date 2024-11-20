@@ -1,0 +1,7 @@
+<ul>
+  @for (theme of themes; track theme) {
+  <li>
+    <button type="button" (click)="updateTheme(theme)">{{ theme | titlecase }}</button>
+  </li>
+  }
+</ul>

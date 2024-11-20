@@ -1,0 +1,27 @@
+.app-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 100dvh;
+}
+
+.app-center__inner {
+  $width: 450px;
+  $mobile-margin: 20px;
+
+  border-radius: 20px;
+  background-color: var(--secondary-bg);
+
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  min-width: $width;
+  max-width: $width;
+
+  @media (max-width: ($width + $mobile-margin * 2)) {
+    min-width: auto;
+    max-width: auto;
+    width: 100%;
+    margin: 0 $mobile-margin;
+  }
+}

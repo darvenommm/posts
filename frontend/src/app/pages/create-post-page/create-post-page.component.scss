@@ -1,0 +1,15 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.control-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.text-field {
+  resize: vertical;
+}

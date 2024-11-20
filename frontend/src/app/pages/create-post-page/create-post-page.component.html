@@ -1,0 +1,59 @@
+<main class="app-center">
+  <form class="form app-center__inner" [formGroup]="formFields" (submit)="onSubmit()">
+    @if (formErrors.length) {
+    <div class="app-errors__errors">
+      @for (errorMessage of formErrors; track errorMessage) {
+      <p class="app-errors__error">{{ errorMessage }}</p>
+      }
+    </div>
+    }
+    <div class="control-container">
+      <div class="app-control">
+        <label for="title">Title:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('title') }"
+          id="title"
+          formControlName="title"
+          type="text"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('title', 'required')) {
+        <p class="app-errors__error">Title is required</p>
+        } @if (hasError('title', 'minlength')) {
+        <p class="app-errors__error">
+          Title must be at least {{ TITLE_CONSTRAINTS.minLength }} characters
+        </p>
+        } @if (hasError('title', 'maxlength')) {
+        <p class="app-errors__error">
+          Title cannot exceed {{ TITLE_CONSTRAINTS.maxLength }} characters
+        </p>
+        }
+      </div>
+    </div>
+    <div class="control-container">
+      <div class="app-control">
+        <label for="text">Text:</label>
+        <textarea
+          class="app-input text-field"
+          [class]="{ 'app-input--invalid': !isValid('text') }"
+          id="text"
+          formControlName="text"
+        ></textarea>
+      </div>
+      <div class="app-errors">
+        @if (hasError('text', 'required')) {
+        <p class="app-errors__error">Text is required</p>
+        } @if (hasError('text', 'maxlength')) {
+        <p class="app-errors__error">
+          Text cannot exceed {{ TEXT_CONSTRAINTS.maxLength }} characters
+        </p>
+        }
+      </div>
+    </div>
+    <button class="app-button" type="submit" [disabled]="formFields.invalid || isSubmitting">
+      Create
+    </button>
+  </form>
+</main>

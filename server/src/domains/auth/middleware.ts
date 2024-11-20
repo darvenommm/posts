@@ -20,6 +20,7 @@ export class AuthMiddleware extends Middleware {
 
   public get middleware(): MiddlewareType {
     return async (request: Request, _: Response, next: NextFunction): Promise<void> => {
+      console.log(request.headers, request.cookies, request.signedCookies);
       const session = request.signedCookies.session;
 
       if (session) {

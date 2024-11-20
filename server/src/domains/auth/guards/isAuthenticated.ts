@@ -22,8 +22,6 @@ export class IsAuthenticatedGuard extends Guard<never> {
     const session: string | null = request.signedCookies.session ?? null;
 
     if (!session || !(await this.authRepository.getUserByField('session', session))) {
-      response.clearCookie('session');
-
       throw new HttpError('User is not authenticated', HttpStatus.UNAUTHORIZED, [
         'You are not authenticated',
       ]);

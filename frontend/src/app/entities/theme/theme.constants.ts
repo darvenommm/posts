@@ -1,5 +1,5 @@
-export const themeAttribute = 'data-theme';
-
-export type Theme = 'light' | 'dark';
-
-export const DEFAULT_THEME: Theme = 'dark';
+export enum Theme {
+  SYSTEM = 'system',
+  DARK = 'dark',
+  LIGHT = 'light',
+}

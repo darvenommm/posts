@@ -1,0 +1,12 @@
+.app-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.app-errors__error {
+  color: var(--error-color);
+  font-size: 16px;
+
+  margin: 0;
+}

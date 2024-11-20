@@ -1,5 +1,5 @@
 export { AuthService } from './auth.service';
-export { authInterceptor } from './auth.interceptor';
 export { authGuard } from './auth.guard';
+export * from './auth.constraints';
 
 export type * from './auth.types';

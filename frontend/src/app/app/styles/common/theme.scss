@@ -1,0 +1,38 @@
+@mixin dark-variables {
+  --primary-bg: var(--dark-primary-bg);
+  --secondary-bg: var(--dark-secondary-bg);
+  --border-color: var(--dark-border-color);
+  --primary-text-color: var(--dark-primary-text-color);
+}
+
+@mixin light-variables {
+  --primary-bg: var(--light-primary-bg);
+  --secondary-bg: var(--light-secondary-bg);
+  --border-color: var(--light-border-color);
+  --primary-text-color: var(--light-primary-text-color);
+}
+
+// default if prefers-color-scheme doesn't work
+body {
+  @include dark-variables();
+}
+
+body[data-theme="dark"] {
+  @include dark-variables();
+}
+
+body[data-theme="light"] {
+  @include light-variables();
+}
+
+body {
+  @media (prefers-color-scheme: dark) {
+    @include dark-variables();
+  }
+}
+
+body {
+  @media (prefers-color-scheme: color) {
+    @include light-variables();
+  }
+}

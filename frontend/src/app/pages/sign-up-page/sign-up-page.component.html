@@ -1,33 +1,91 @@
-<form class="form" [formGroup]="formFields" (submit)="onSubmit()">
-  @if (formErrors.length) {
-    <div class="form-errors">
-      <app-form-errors [errors]="formErrors" />
+<main class="app-center">
+  <form class="form app-center__inner" [formGroup]="formFields" (submit)="onSubmit()">
+    @if (formErrors.length) {
+    <div class="app-errors__errors">
+      @for (errorMessage of formErrors; track errorMessage) {
+      <p class="app-errors__error">{{ errorMessage }}</p>
+      }
     </div>
-  }
-  <div>
+    }
     <div class="control-container">
-      <label for="email">Email:</label>
-      <app-input inputId="email" formControlName="email" [valid]="isValid('email')" />
+      <div class="app-control">
+        <label for="email">Email:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('email') }"
+          id="email"
+          formControlName="email"
+          type="text"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('email', 'required')) {
+        <p class="app-errors__error">Email is required</p>
+        } @if (hasError('email', 'pattern')) {
+        <p class="app-errors__error">Invalid email format</p>
+        }
+      </div>
     </div>
-    <app-form-errors [errors]="getEmailErrorsMessage()" />
-  </div>
-  <div>
     <div class="control-container">
-      <label for="username">Username:</label>
-      <app-input inputId="username" formControlName="username" [valid]="isValid('username')" />
+      <div class="app-control">
+        <label for="username">Username:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('username') }"
+          id="username"
+          formControlName="username"
+          type="text"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('username', 'required')) {
+        <p class="app-errors__error">Username is required</p>
+        } @if (hasError('username', 'minlength')) {
+        <p class="app-errors__error">
+          Username must be at least {{ USERNAME_CONSTRAINTS.minLength }} characters
+        </p>
+        } @if (hasError('username', 'maxlength')) {
+        <p class="app-errors__error">
+          Username cannot exceed {{ USERNAME_CONSTRAINTS.maxLength }} characters
+        </p>
+        } @if (hasError('username', 'pattern')) {
+        <p class="app-errors__error">
+          Username contains invalid characters ({{ USERNAME_CONSTRAINTS.beautyPattern }})
+        </p>
+        }
+      </div>
     </div>
-    <app-form-errors [errors]="getUsernameErrorsMessage()" />
-  </div>
-  <div>
     <div class="control-container">
-      <label for="password">Password:</label>
-      <app-input inputId="password" formControlName="password" [valid]="isValid('password')" />
+      <div class="app-control">
+        <label for="password">Password:</label>
+        <input
+          class="app-input"
+          [class]="{ 'app-input--invalid': !isValid('password') }"
+          id="password"
+          formControlName="password"
+          type="password"
+        />
+      </div>
+      <div class="app-errors">
+        @if (hasError('password', 'required')) {
+        <p class="app-errors__error">Password is required</p>
+        } @if (hasError('password', 'minlength')) {
+        <p class="app-errors__error">
+          Password must be at least {{ PASSWORD_CONSTRAINTS.minLength }} characters
+        </p>
+        } @if (hasError('password', 'maxlength')) {
+        <p class="app-errors__error">
+          Password cannot exceed {{ PASSWORD_CONSTRAINTS.maxLength }} characters
+        </p>
+        }
+      </div>
     </div>
-    <app-form-errors [errors]="getPasswordErrorsMessage()" />
-  </div>
-  <app-button type="submit" [disabled]="formFields.invalid || isSubmitting">Submit</app-button>
-  <div class="links">
-    <span>You're registered?</span>
-    <app-link [path]="['/auth/sign-in']" parentClass="link">Sign In</app-link>
-  </div>
-</form>
+    <button class="app-button" type="submit" [disabled]="formFields.invalid || isSubmitting">
+      Sign up
+    </button>
+    <div class="links">
+      <span>You're registered?</span>
+      <a class="app-link" [routerLink]="['/auth/sign-in']">Sign In</a>
+    </div>
+  </form>
+</main>

@@ -67,9 +67,9 @@ export class Application {
     server.use(helmet());
     server.use(
       cors({
-        origin: 'http://localhost:4200',
-        credentials: true,
+        origin: ['http://localhost:4200'],
         allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
       }),
     );
     server.use(express.json());

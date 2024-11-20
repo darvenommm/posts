@@ -14,7 +14,7 @@ export interface PostWithCanModify extends Post {
   readonly canModify: boolean;
 }
 
-export interface CreatingPostData {
+export interface CreatePostDTO {
   readonly id: string;
   readonly title: string;
   readonly text: string;

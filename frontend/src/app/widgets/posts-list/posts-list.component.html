@@ -1,23 +1,15 @@
-@switch (state) {
-  @case ('loading') {
-    <p>Loading...</p>
+@if (postsPages.isLoading()) {
+<p>Loading...</p>
+} @if (postsPages.error()) {
+<p>Error</p>
+} @if (postsPages.hasValue()) { @let page = postsPages.value()!;
+<ul>
+  @for (post of page.posts; track post.id) {
+  <li>
+    <p>{{ post.title }}</p>
+  </li>
   }
+</ul>
 
-  @case('error') {
-    <p>Error!</p>
-  }
-
-  @case('success') {
-    @if (posts.length) {
-      <ul>
-        @for (post of posts; track post.id) {
-          <li>
-            <p>{{ post.title }}</p>
-          </li>
-        }
-      </ul>
-    } @else {
-      <p>There aren't posts</p>
-    }
-  }
+<p>Pages count: {{ page.pagesCount }}</p>
 }

@@ -7,6 +7,7 @@ import { PostsPageComponent } from '@pages/posts-page';
 import { SignInPageComponent } from '@pages/sign-in-page';
 import { SignUpPageComponent } from '@pages/sign-up-page';
 import { authGuard } from '@entities/auth';
+import { PageTemplateComponent } from '@pages/page-template';
 
 export const routes: Routes = [
   {
@@ -30,29 +31,35 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'posts',
+    path: '',
+    component: PageTemplateComponent,
     children: [
       {
-        path: '',
-        component: PostsPageComponent,
-        title: 'Posts',
+        path: 'posts',
+        children: [
+          {
+            path: '',
+            component: PostsPageComponent,
+            title: 'Posts',
+          },
+          {
+            path: 'create',
+            component: CreatePostPageComponent,
+            title: 'Create post',
+            canActivate: [authGuard],
+          },
+          // {
+          //   path: ':postSlug',
+          //   component: PostPageComponent,
+          //   title: 'Post',
+          // },
+        ],
       },
       {
-        path: 'create',
-        component: CreatePostPageComponent,
-        title: 'Create post',
-        canActivate: [authGuard],
+        path: '**',
+        component: NotFoundPageComponent,
+        title: 'Not found page',
       },
-      // {
-      //   path: ':postSlug',
-      //   component: PostPageComponent,
-      //   title: 'Post',
-      // },
     ],
-  },
-  {
-    path: '**',
-    component: NotFoundPageComponent,
-    title: 'Not found page',
   },
 ];

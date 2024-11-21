@@ -17,4 +17,8 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  &--active {
+    text-decoration: underline;
+  }
 }

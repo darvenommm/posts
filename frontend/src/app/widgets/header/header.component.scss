@@ -1,0 +1,35 @@
+.header {
+  background-color: var(--secondary-bg);
+
+  width: 100%;
+}
+
+.header__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.main-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.extra-block {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

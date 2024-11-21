@@ -1,0 +1,43 @@
+<header class="header">
+  <div class="header__inner app-container">
+    <nav>
+      <ul class="main-links">
+        @for (link of links; track link.route) {
+        <li>
+          <a class="app-link" [routerLink]="link.route" routerLinkActive="app-link--active">{{
+            link.text | titlecase
+          }}</a>
+        </li>
+        }
+      </ul>
+    </nav>
+    <div class="extra-block">
+      <div>
+        @if (isAuthenticated.isLoading() || !isAuthenticated.value()) {
+        <div class="auth-links">
+          <a
+            class="app-link"
+            [routerLink]="['/auth/sign-up']"
+            [routerLinkActive]="'app-link--active'"
+            >Sign up</a
+          >
+          <a
+            class="app-link"
+            [routerLink]="['/auth/sign-in']"
+            [routerLinkActive]="'app-link--active'"
+            >Sign in</a
+          >
+        </div>
+        } @else if (isAuthenticated.error()) {
+        <p>{{ isAuthenticated.error() }}</p>
+        } @else {
+        <app-sign-out-button (userSignOutEvent)="handleUserSignOuting()" />
+        }
+      </div>
+      |
+      <div>
+        <app-switch-theme-button />
+      </div>
+    </div>
+  </div>
+</header>

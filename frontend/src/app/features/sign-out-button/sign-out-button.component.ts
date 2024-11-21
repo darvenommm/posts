@@ -8,13 +8,13 @@ import { AuthService } from '@entities/auth';
 })
 export class SignOutButtonComponent {
   public readonly authService = inject(AuthService);
-  public readonly signOut = output<void>();
+  public readonly userSignOutEvent = output<void>();
 
   public onClick(): void {
     this.authService.signOut().subscribe({
       next: () => {
-        this.signOut.emit();
-        console.log('here');
+        console.log('emit');
+        this.userSignOutEvent.emit();
       },
       error: console.error,
     });

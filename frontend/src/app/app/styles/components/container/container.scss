@@ -1,2 +1,24 @@
+$desktop-width: 1024px;
+$desktop-padding: 20px;
+$tablet-padding: 20px;
+$tablet-width: 600px;
+$mobile-padding: 10px;
+
 .app-container {
+  margin: 0 auto;
+
+  min-width: $desktop-width;
+  max-width: $desktop-width;
+  padding: 0 $desktop-padding;
+
+  @media (max-width: ($desktop-width + $desktop-padding * 2)) {
+    min-width: auto;
+    max-width: auto;
+    width: 100%;
+    padding: 0 $tablet-padding;
+  }
+
+  @media (max-width: ($tablet-width + $tablet-padding * 2)) {
+    padding: 0 $mobile-padding;
+  }
 }

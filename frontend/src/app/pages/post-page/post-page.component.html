@@ -2,7 +2,7 @@
   @if (post.isLoading()) {
   <p>Loading...</p>
   } @if (post.error()) {
-  <p>{{ post.error() }}</p>
+  <p>Server error!</p>
   } @if (post.hasValue()) {
   <p><span class="field-title">Title:</span> {{ post.value()!.title }}</p>
   <p><span class="field-title">Text:</span> {{ post.value()!.text }}</p>

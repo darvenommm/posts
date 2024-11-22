@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  margin: 0 auto;
+}
+
+.control-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.text-field {
+  resize: vertical;
+}

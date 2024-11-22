@@ -3,6 +3,7 @@
   --secondary-bg: var(--dark-secondary-bg);
   --border-color: var(--dark-border-color);
   --primary-text-color: var(--dark-primary-text-color);
+  --secondary-text-color: var(--dark-secondary-text-color);
 }
 
 @mixin light-variables {
@@ -10,6 +11,7 @@
   --secondary-bg: var(--light-secondary-bg);
   --border-color: var(--light-border-color);
   --primary-text-color: var(--light-primary-text-color);
+  --secondary-text-color: var(--light-secondary-text-color);
 }
 
 // default if prefers-color-scheme doesn't work

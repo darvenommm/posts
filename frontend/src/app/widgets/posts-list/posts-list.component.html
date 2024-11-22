@@ -2,7 +2,7 @@
   @if (postsPages.isLoading()) {
   <p>Loading...</p>
   } @if (postsPages.error()) {
-  <p>Error</p>
+  <p>Server error</p>
   } @if (postsPages.hasValue()) { @if (!posts().length) {
   <p>There aren't posts</p>
   } @else {

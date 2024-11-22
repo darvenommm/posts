@@ -33,7 +33,7 @@
           >
         </div>
         } @else if (isAuthenticated.error()) {
-        <p>{{ isAuthenticated.error() }}</p>
+        <p>Server error!</p>
         } @else {
         <app-sign-out-button (userSignOutEvent)="handleUserSignOuting()" />
         }

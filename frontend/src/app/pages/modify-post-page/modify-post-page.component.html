@@ -1,1 +1,58 @@
-<p>modify-post-page works!</p>
+<h1 class="app-visually-hidden">Update post.</h1>
+<form class="form app-center__inner" [formGroup]="formFields" (submit)="onSubmit()">
+  @if (formErrors.length) {
+  <div class="app-errors__errors">
+    @for (errorMessage of formErrors; track errorMessage) {
+    <p class="app-errors__error">{{ errorMessage }}</p>
+    }
+  </div>
+  }
+  <div class="control-container">
+    <div class="app-control">
+      <label for="new-title">New title:</label>
+      <input
+        class="app-input"
+        [class]="{ 'app-input--invalid': !isValid('newTitle') }"
+        id="new-title"
+        formControlName="newTitle"
+        type="text"
+      />
+    </div>
+    <div class="app-errors">
+      @if (hasError('newTitle', 'required')) {
+      <p class="app-errors__error">Title is required</p>
+      } @if (hasError('newTitle', 'minlength')) {
+      <p class="app-errors__error">
+        Title must be at least {{ TITLE_CONSTRAINTS.minLength }} characters
+      </p>
+      } @if (hasError('newTitle', 'maxlength')) {
+      <p class="app-errors__error">
+        Title cannot exceed {{ TITLE_CONSTRAINTS.maxLength }} characters
+      </p>
+      }
+    </div>
+  </div>
+  <div class="control-container">
+    <div class="app-control">
+      <label for="new-text">New text:</label>
+      <textarea
+        class="app-input text-field"
+        [class]="{ 'app-input--invalid': !isValid('newText') }"
+        id="new-text"
+        formControlName="newText"
+      ></textarea>
+    </div>
+    <div class="app-errors">
+      @if (hasError('newText', 'required')) {
+      <p class="app-errors__error">Text is required</p>
+      } @if (hasError('newText', 'maxlength')) {
+      <p class="app-errors__error">
+        Text cannot exceed {{ TEXT_CONSTRAINTS.maxLength }} characters
+      </p>
+      }
+    </div>
+  </div>
+  <button class="app-button" type="submit" [disabled]="formFields.invalid || isSubmitting">
+    Update
+  </button>
+</form>

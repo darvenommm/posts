@@ -3,7 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '@env/environment';
-import { CreatePostDTO, PostsPages, PostsPagesOptions, PostWithCanModify } from './posts.types';
+import {
+  CreatePostDTO,
+  PostsPages,
+  PostsPagesOptions,
+  PostWithCanModify,
+  UpdatePostDTO,
+} from './posts.types';
 
 @Injectable()
 export class PostsService {
@@ -22,5 +28,9 @@ export class PostsService {
 
   public createPost(createPostDTO: CreatePostDTO): Observable<null> {
     return this.http.post<null>(this.postsUrl, createPostDTO);
+  }
+
+  public updatePost(slug: string, updatePostDTO: UpdatePostDTO): Observable<null> {
+    return this.http.put<null>(`${this.postsUrl}/${slug}`, updatePostDTO);
   }
 }

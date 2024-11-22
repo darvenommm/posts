@@ -8,6 +8,7 @@ import { SignInPageComponent } from '@pages/sign-in-page';
 import { SignUpPageComponent } from '@pages/sign-up-page';
 import { authGuard } from '@entities/auth';
 import { PageTemplateComponent } from '@pages/page-template';
+import { ModifyPostPageComponent } from '@pages/modify-post-page';
 
 export const routes: Routes = [
   {
@@ -48,11 +49,16 @@ export const routes: Routes = [
             title: 'Create post',
             canActivate: [authGuard],
           },
-          // {
-          //   path: ':postSlug',
-          //   component: PostPageComponent,
-          //   title: 'Post',
-          // },
+          {
+            path: ':postSlug/modify',
+            component: ModifyPostPageComponent,
+            title: 'Modify post',
+          },
+          {
+            path: ':postSlug',
+            component: PostPageComponent,
+            title: 'Post',
+          },
         ],
       },
       {

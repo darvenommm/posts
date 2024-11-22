@@ -16,6 +16,7 @@ body {
   background-color: var(--primary-bg);
 
   margin: 0;
+  height: 100dvh;
 }
 
 input,
@@ -27,4 +28,10 @@ textarea {
 label,
 button {
   cursor: pointer;
+}
+
+app-root {
+  display: block;
+
+  height: 100dvh;
 }

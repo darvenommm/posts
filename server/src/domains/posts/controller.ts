@@ -20,10 +20,6 @@ import type { Guard } from '@/base/guard';
 
 export const POSTS_CONTROLLER = getUniqueId();
 
-interface GetOneResult {
-  readonly post: PostForRenderingWithPermission;
-}
-
 interface Params {
   readonly slug: string;
 }
@@ -98,7 +94,10 @@ export class PostsController extends Controller {
     });
   }
 
-  public async getOne(request: Request<Params>, response: Response<GetOneResult>): Promise<void> {
+  public async getOne(
+    request: Request<Params>,
+    response: Response<PostForRenderingWithPermission>,
+  ): Promise<void> {
     const { slug } = request.params;
     const user = this.getCurrentUser(request);
     const postData = await this.postsService.getPostBySlugAndCheckExisting(slug);
@@ -106,7 +105,7 @@ export class PostsController extends Controller {
     const canModify =
       user.username === postData.creator.username || [Role.ADMIN].includes(user.role);
 
-    response.status(HttpStatus.OK).json({ post: { ...postData, canModify } });
+    response.status(HttpStatus.OK).json({ ...postData, canModify });
   }
 
   public async getByPagination(

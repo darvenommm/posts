@@ -37,6 +37,10 @@ export class HeaderComponent {
       text: 'posts',
       route: ['/posts'],
     },
+    {
+      text: 'create post',
+      route: ['/posts/create'],
+    },
   ];
 
   public handleUserSignOuting(): void {

@@ -1,0 +1,8 @@
+:host {
+  display: flex;
+  flex-direction: column;
+
+  app-posts-list {
+    flex-grow: 1;
+  }
+}

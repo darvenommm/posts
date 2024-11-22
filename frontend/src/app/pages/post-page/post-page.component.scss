@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background-color: var(--secondary-bg);
+  border-radius: 20px;
+
+  padding: 20px;
+
+  > p {
+    margin: 0;
+  }
+}
+
+.field-title {
+  font-size: 20px;
+  text-decoration: underline;
+}

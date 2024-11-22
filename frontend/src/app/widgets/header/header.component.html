@@ -4,9 +4,13 @@
       <ul class="main-links">
         @for (link of links; track link.route) {
         <li>
-          <a class="app-link" [routerLink]="link.route" routerLinkActive="app-link--active">{{
-            link.text | titlecase
-          }}</a>
+          <a
+            class="app-link"
+            [routerLink]="link.route"
+            routerLinkActive="app-link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            >{{ link.text | titlecase }}</a
+          >
         </li>
         }
       </ul>

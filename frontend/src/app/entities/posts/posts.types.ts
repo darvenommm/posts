@@ -24,3 +24,8 @@ export interface PostsPages {
   readonly pagesCount: number;
   readonly posts: Post[];
 }
+
+export interface PostsPagesOptions {
+  readonly pageNumber?: number;
+  readonly limit?: number;
+}

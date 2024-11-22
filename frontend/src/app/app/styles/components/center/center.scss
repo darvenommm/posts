@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
 
-  min-height: 100dvh;
+  height: 100dvh;
 }
 
 .app-center__inner {
@@ -20,7 +20,7 @@
 
   @media (max-width: ($width + $mobile-margin * 2)) {
     min-width: auto;
-    max-width: auto;
+    max-width: none;
     width: 100%;
     margin: 0 $mobile-margin;
   }

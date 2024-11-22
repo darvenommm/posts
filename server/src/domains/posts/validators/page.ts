@@ -1,13 +1,14 @@
+import { injectable } from 'inversify';
 import { checkSchema } from 'express-validator';
 
 import { Validator } from '@/base/validator';
-import { getUniqueId } from '@/helpers';
 
 import type { ValidationChain } from 'express-validator';
 
-export const PAGES_PAGINATION_VALIDATOR = getUniqueId();
+export const PAGE_VALIDATOR = Symbol('PageValidator');
 
-export class pagesPaginationValidator extends Validator {
+@injectable()
+export class PageValidator extends Validator {
   protected getValidators(): Iterable<ValidationChain> {
     return checkSchema({
       page: {

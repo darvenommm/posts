@@ -10,15 +10,29 @@ export interface IPost {
 
 interface CreatorData extends Pick<IUser, 'username'> {}
 
-export interface PostForRendering extends Omit<IPost, 'creatorId'> {
+export interface PostData extends Omit<IPost, 'creatorId'> {
   readonly creator: CreatorData;
-}
-
-export interface PagesPaginationResult {
-  readonly posts: PostForRendering[];
-  readonly pagesCount: number;
-}
-
-export interface PostForRenderingWithPermission extends PostForRendering {
   readonly canModify: boolean;
+}
+
+export interface PageOptions {
+  limit: number;
+  page: number;
+}
+
+export interface CreatePostData extends Pick<IPost, 'id' | 'title' | 'text' | 'creatorId'> {}
+
+export interface UpdatePostData extends Pick<IPost, 'title' | 'text'> {}
+
+export interface CreateResult {
+  readonly slug: string;
+}
+
+export interface UpdateResult {
+  readonly newSlug: string;
+}
+
+export interface PageResult {
+  readonly posts: PostData[];
+  readonly pagesCount: number;
 }

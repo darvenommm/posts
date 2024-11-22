@@ -1,7 +1,10 @@
+import { injectable } from 'inversify';
+
 import { isIP, isPort } from 'validator';
 
 import type { IDatabaseSettings } from '../database/types';
 
+@injectable()
 export class TestDatabaseSettings implements IDatabaseSettings {
   public get host(): string {
     const host = process.env.FAKE_DB_HOST;

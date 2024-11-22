@@ -1,11 +1,11 @@
+import { injectable } from 'inversify';
 import { isInt } from 'validator';
-
-import { getUniqueId } from '@/helpers';
 
 import type { IExtraSettings } from './types';
 
-export const EXTRA_SETTINGS = getUniqueId();
+export const EXTRA_SETTINGS = Symbol('ExtraSettings');
 
+@injectable()
 export class ExtraSettings implements IExtraSettings {
   public get secret(): string {
     const secret = process.env.SECRET;

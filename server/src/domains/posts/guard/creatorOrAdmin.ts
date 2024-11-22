@@ -1,31 +1,31 @@
-import { getUniqueId } from '@/helpers';
+import { inject, injectable } from 'inversify';
+
 import { Guard } from '@/base/guard';
 import { InternalServerError } from '@/base/errors';
 import { Role } from '@/domains/auth';
 import { POSTS_SERVICE, type IPostsService } from '../service';
 
-import type { IContainer } from '@/container';
 import type { Request } from 'express';
 
-export const CREATOR_OR_ADMIN_GUARD = getUniqueId();
+export const CREATOR_OR_ADMIN_GUARD = Symbol('CreatorOrAdminGuard');
 
+@injectable()
 export class CreatorOrAdminGuard extends Guard {
-  private readonly postsService: IPostsService;
-
-  public constructor(container: IContainer) {
+  public constructor(@inject(POSTS_SERVICE) private readonly postsService: IPostsService) {
     super();
-    this.postsService = container[POSTS_SERVICE] as IPostsService;
   }
 
   protected async check(request: Request): Promise<boolean> {
-    const user = request.user;
+    const currentUser = request.user;
 
-    if (!user) throw new InternalServerError('Not found user in request');
+    if (!currentUser) {
+      throw new InternalServerError('Not found user in request');
+    }
 
     const postSlug = request.path.split('/').at(-1) as string;
-    const post = await this.postsService.getPostBySlugAndCheckExisting(postSlug);
+    const post = await this.postsService.getPostBySlug(postSlug);
 
-    if (post.creator.username !== user.username && user.role !== Role.ADMIN) {
+    if (post.creator.username !== currentUser.username && currentUser.role !== Role.ADMIN) {
       return false;
     }
 

@@ -1,58 +1,58 @@
+import { inject, injectable } from 'inversify';
 import { HttpMethod, HttpStatus } from 'http-enums';
 
 import { Controller } from '@/base/controller';
-import { getUniqueId } from '@/helpers';
-
 import { POSTS_SERVICE, type IPostsService } from './service';
-import { IS_AUTHENTICATED_GUARD, Role, type IsAuthenticatedGuard, type IUser } from '../auth';
-import { ADD_VALIDATOR } from './validators/add';
+import { IS_AUTHENTICATED_GUARD, type IUser } from '../auth';
+import { CREATE_VALIDATOR } from './validators/create';
 import { UPDATE_VALIDATOR } from './validators/update';
-import { PAGES_PAGINATION_VALIDATOR } from './validators/pagesPagination';
+import { PAGE_VALIDATOR } from './validators/page';
 import { CREATOR_OR_ADMIN_GUARD } from './guard/creatorOrAdmin';
 
 import type { Request, Response } from 'express';
-import type { IContainer } from '@/container';
-import type { PostForRenderingWithPermission, PagesPaginationResult } from './types';
+import type { PostData, PageResult, CreateResult, UpdateResult } from './types';
 import type { PagesPaginationDTO } from './dtos';
 import type { AddDTO, UpdateDTO } from './dtos';
 import type { Validator } from '@/base/validator';
 import type { Guard } from '@/base/guard';
+import type { Handler } from '@/types';
 
-export const POSTS_CONTROLLER = getUniqueId();
+export const POSTS_CONTROLLER = Symbol('PostsController');
 
 interface Params {
   readonly slug: string;
 }
 
-export class PostsController extends Controller {
+export interface IPostsController {
+  getOne: Handler<PostData>;
+  getPage: Handler<PageResult>;
+  create: Handler<CreateResult>;
+  update: Handler<UpdateResult>;
+  remove: Handler<void>;
+}
+
+@injectable()
+export class PostsController extends Controller implements IPostsController {
   protected prefix = '/posts';
 
-  private readonly postsService: IPostsService;
-  private readonly addValidator: Validator;
-  private readonly updateValidator: Validator;
-  private readonly pagesPaginationValidator: Validator;
-  private readonly creatorOrAdminGuard: Guard;
-  private readonly isAuthenticatedGuard: Guard;
-
-  public constructor(container: IContainer) {
+  public constructor(
+    @inject(POSTS_SERVICE) private readonly postsService: IPostsService,
+    @inject(CREATE_VALIDATOR) private readonly createValidator: Validator,
+    @inject(UPDATE_VALIDATOR) private readonly updateValidator: Validator,
+    @inject(PAGE_VALIDATOR) private readonly pageValidator: Validator,
+    @inject(CREATOR_OR_ADMIN_GUARD) private readonly creatorOrAdminGuard: Guard,
+    @inject(IS_AUTHENTICATED_GUARD) private readonly isAuthenticatedGuard: Guard,
+  ) {
     super();
-    this.postsService = container[POSTS_SERVICE] as IPostsService;
-
-    this.addValidator = container[ADD_VALIDATOR] as Validator;
-    this.updateValidator = container[UPDATE_VALIDATOR] as Validator;
-    this.pagesPaginationValidator = container[PAGES_PAGINATION_VALIDATOR] as Validator;
-
-    this.creatorOrAdminGuard = container[CREATOR_OR_ADMIN_GUARD] as Guard;
-    this.isAuthenticatedGuard = container[IS_AUTHENTICATED_GUARD] as IsAuthenticatedGuard;
   }
 
   protected setUpRouter(): void {
     this.addRoute({
       method: HttpMethod.GET,
       path: '',
-      handler: this.getByPagination,
+      handler: this.getPage,
       handlerThis: this,
-      middlewares: this.pagesPaginationValidator.getValidationChain(),
+      middlewares: this.pageValidator.getValidationChain(),
     });
 
     this.addRoute({
@@ -65,11 +65,11 @@ export class PostsController extends Controller {
     this.addRoute({
       method: HttpMethod.POST,
       path: '',
-      handler: this.add,
+      handler: this.create,
       handlerThis: this,
       middlewares: [
         this.isAuthenticatedGuard.getGuard(),
-        ...this.addValidator.getValidationChain(),
+        ...this.createValidator.getValidationChain(),
       ],
     });
 
@@ -94,45 +94,36 @@ export class PostsController extends Controller {
     });
   }
 
-  public async getOne(
-    request: Request<Params>,
-    response: Response<PostForRenderingWithPermission>,
-  ): Promise<void> {
+  public async getOne(request: Request<Params>, response: Response<PostData>): Promise<void> {
     const { slug } = request.params;
-    const user = this.getCurrentUser(request);
-    const postData = await this.postsService.getPostBySlugAndCheckExisting(slug);
+    const currentUser = this.getCurrentUser(request);
+    const postData = await this.postsService.getPostBySlug(slug, currentUser);
 
-    const canModify =
-      user.username === postData.creator.username || [Role.ADMIN].includes(user.role);
-
-    response.status(HttpStatus.OK).json({ ...postData, canModify });
+    response.status(HttpStatus.OK).json(postData);
   }
 
-  public async getByPagination(
-    request: Request,
-    response: Response<PagesPaginationResult>,
-  ): Promise<void> {
-    const payload = request.payload as PagesPaginationDTO;
-    const responseData = await this.postsService.getPostsByPagesPagination(payload);
+  public async getPage(request: Request, response: Response<PageResult>): Promise<void> {
+    const paginationOptions = request.payload as PagesPaginationDTO;
+    const currentUser = this.getCurrentUser(request);
+    const postsPage = await this.postsService.getPostsPages(paginationOptions, currentUser);
 
-    response.status(HttpStatus.OK).json(responseData);
+    response.status(HttpStatus.OK).json(postsPage);
   }
 
-  public async add(request: Request, response: Response<void>): Promise<void> {
+  public async create(request: Request, response: Response<CreateResult>): Promise<void> {
     const payload = request.payload as AddDTO;
-    const { id: creatorId } = this.getCurrentUser(request);
+    const creator = this.getCurrentUser(request);
+    const createResult = await this.postsService.createPost({ ...payload, creatorId: creator.id });
 
-    await this.postsService.addPost(payload, creatorId);
-
-    response.status(HttpStatus.CREATED).end();
+    response.status(HttpStatus.CREATED).json(createResult);
   }
 
-  public async update(request: Request<Params>, response: Response<void>): Promise<void> {
+  public async update(request: Request<Params>, response: Response<UpdateResult>): Promise<void> {
     const { slug } = request.params;
     const payload = request.payload as UpdateDTO;
-    await this.postsService.fullUpdatePostBySlug(slug, payload);
+    const updateResult = await this.postsService.fullUpdatePostBySlug(slug, payload);
 
-    response.status(HttpStatus.NO_CONTENT).end();
+    response.status(HttpStatus.NO_CONTENT).json(updateResult);
   }
 
   public async remove(request: Request<Params>, response: Response<void>): Promise<void> {

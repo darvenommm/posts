@@ -1,11 +1,11 @@
+import { injectable } from 'inversify';
 import { isIP, isPort } from 'validator';
-
-import { getUniqueId } from '@/helpers';
 
 import type { IServerSettings } from './types';
 
-export const SERVER_SETTINGS = getUniqueId();
+export const SERVER_SETTINGS = Symbol('ServerSettings');
 
+@injectable()
 export class ServerSettings implements IServerSettings {
   public get host(): string {
     const host = process.env.SERVER_HOST ?? '127.0.0.1';

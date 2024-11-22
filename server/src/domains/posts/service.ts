@@ -1,105 +1,147 @@
+import { inject, injectable } from 'inversify';
 import { HttpStatus } from 'http-enums';
 
-import { getUniqueId } from '@/helpers';
 import { HttpError, InternalServerError } from '@/base/errors';
 import { POSTS_REPOSITORY, type IPostsRepository } from './repository';
-import { AUTH_REPOSITORY, type IAuthRepository } from '../auth';
+import { AUTH_REPOSITORY, Role, type IAuthRepository, type IUser } from '../auth';
 
-import type { AddDTO, UpdateDTO } from './dtos';
-import type { PostForRendering, PagesPaginationResult } from './types';
-import type { PagesPaginationDTO } from './dtos';
-import type { IContainer } from '@/container';
+import type {
+  PostData,
+  PageOptions,
+  PageResult,
+  CreatePostData,
+  UpdatePostData,
+  CreateResult,
+  UpdateResult,
+} from './types';
 
-export const POSTS_SERVICE = getUniqueId();
+export const POSTS_SERVICE = Symbol('PostsService');
 
 export interface IPostsService {
-  getPostBySlugAndCheckExisting: (slug: string) => Promise<PostForRendering>;
+  getPostBySlug: (slug: string, currentUser?: IUser | null) => Promise<PostData>;
+  getPostsPages: (
+    paginationOptions: PageOptions,
+    currentUserId?: IUser | null,
+  ) => Promise<PageResult>;
 
-  getPostsByPagesPagination: (
-    paginationSettings: PagesPaginationDTO,
-  ) => Promise<PagesPaginationResult>;
-
-  addPost: (postData: AddDTO, creatorId: string) => Promise<void>;
-  fullUpdatePostBySlug: (slug: string, updateData: UpdateDTO) => Promise<void>;
+  createPost: (postData: CreatePostData) => Promise<CreateResult>;
+  fullUpdatePostBySlug: (slug: string, updateData: UpdatePostData) => Promise<UpdateResult>;
   removePostBySlug: (slug: string) => Promise<void>;
 }
 
+@injectable()
 export class PostsService implements IPostsService {
-  private readonly authRepository: IAuthRepository;
-  private readonly postsRepository: IPostsRepository;
+  public constructor(
+    @inject(AUTH_REPOSITORY) private readonly authRepository: IAuthRepository,
+    @inject(POSTS_REPOSITORY) private readonly postsRepository: IPostsRepository,
+  ) {}
 
-  public constructor(container: IContainer) {
-    this.authRepository = container[AUTH_REPOSITORY] as IAuthRepository;
-    this.postsRepository = container[POSTS_REPOSITORY] as IPostsRepository;
-  }
-
-  public async getPostBySlugAndCheckExisting(slug: string): Promise<PostForRendering> {
-    const post = await this.postsRepository.getPostByField('slug', slug);
+  public async getPostBySlug(slug: string, currentUser: IUser | null = null): Promise<PostData> {
+    const post = await this.postsRepository.getPost('slug', slug);
     if (!post) {
       throw new HttpError('Incorrect slug', HttpStatus.UNPROCESSABLE_ENTITY, [
         'A post with this slug is not existed',
       ]);
     }
 
-    const user = await this.authRepository.getUserByField('id', post.creatorId);
-    if (!user) throw new InternalServerError('Incorrect creator id');
-
-    return { ...post, creator: { username: user.username } };
+    return {
+      ...post,
+      creator: await this.getCreatorInfo(post.creatorId),
+      canModify: this.canUserModify(post.creatorId, currentUser),
+    };
   }
 
-  public async getPostsByPagesPagination(
-    paginationSettings: PagesPaginationDTO,
-  ): Promise<PagesPaginationResult> {
-    const { limit } = paginationSettings;
+  public async getPostsPages(
+    paginationOptions: PageOptions,
+    currentUser: IUser | null = null,
+  ): Promise<PageResult> {
+    const { limit } = paginationOptions;
 
-    const [postsCount, posts] = await Promise.all([
+    const [postsCount, rawPosts] = await Promise.all([
       this.postsRepository.getPostsCount(),
-      this.postsRepository.getPostsByPages(paginationSettings),
+      this.postsRepository.getPostsByPages(paginationOptions),
     ]);
 
-    const postsForRendering = await Promise.all(
-      posts.map(async (post): Promise<PostForRendering> => {
-        const user = await this.authRepository.getUserByField('id', post.creatorId);
-        if (!user) throw new InternalServerError('Incorrect creator id');
-
-        return { ...post, creator: { username: user.username } };
+    const posts = await Promise.all(
+      rawPosts.map(async (rawPost): Promise<PostData> => {
+        return {
+          ...rawPost,
+          creator: await this.getCreatorInfo(rawPost.creatorId),
+          canModify: this.canUserModify(rawPost.creatorId, currentUser),
+        };
       }),
     );
-
     const pagesCount = Math.ceil(postsCount / Math.max(limit, 1));
 
-    return { posts: postsForRendering, pagesCount };
+    return { posts, pagesCount };
   }
 
-  public async addPost(postData: AddDTO, creatorId: string): Promise<void> {
-    // Do post method idempotent (id received from frontend)
-    if (await this.postsRepository.getPostByField('id', postData.id)) {
-      return;
+  public async createPost(postData: CreatePostData): Promise<CreateResult> {
+    const postById = await this.postsRepository.getPost('id', postData.id);
+    if (postById) {
+      return { slug: postById.slug };
     }
 
-    await this.checkNotExistingPostWithThisTitle(postData.title);
-
-    return this.postsRepository.addPost(postData, creatorId);
-  }
-
-  public async fullUpdatePostBySlug(slug: string, updateData: UpdateDTO): Promise<void> {
-    const { id } = await this.getPostBySlugAndCheckExisting(slug);
-    await this.checkNotExistingPostWithThisTitle(updateData.title);
-
-    return this.postsRepository.fullUpdatePostById(id, updateData);
-  }
-
-  public async removePostBySlug(slug: string): Promise<void> {
-    const { id } = await this.getPostBySlugAndCheckExisting(slug);
-
-    return this.postsRepository.removePostById(id);
-  }
-
-  private async checkNotExistingPostWithThisTitle(title: string): Promise<never | void> {
-    if (await this.postsRepository.getPostByField('title', title)) {
+    const postWithThisTitle = await this.postsRepository.getPost('title', postData.title);
+    if (postWithThisTitle) {
       throw new HttpError('Repeated title', HttpStatus.UNPROCESSABLE_ENTITY, [
         'There is a post with this title already',
       ]);
     }
+
+    return this.postsRepository.createPost(postData);
+  }
+
+  public async fullUpdatePostBySlug(
+    slug: string,
+    updateData: UpdatePostData,
+  ): Promise<UpdateResult> {
+    const { id: postId } = await this.getPostBySlug(slug);
+
+    const postWithThisTitle = await this.postsRepository.getPost('title', updateData.title);
+    if (postWithThisTitle && postId !== postWithThisTitle.id) {
+      throw new HttpError('Repeated title', HttpStatus.UNPROCESSABLE_ENTITY, [
+        'There is a post with this title already',
+      ]);
+    }
+
+    return this.postsRepository.fullUpdatePost('id', postId, updateData);
+  }
+
+  public async removePostBySlug(slug: string): Promise<void> {
+    const { id: postId } = await this.getPostBySlug(slug);
+
+    return this.postsRepository.removePost('id', postId);
+  }
+
+  private async checkTitleNotExistedByOthers(
+    currentPostId: string,
+    titleForChecking: string,
+  ): Promise<never | void> {
+    const postWithThisTitle = await this.postsRepository.getPost('title', titleForChecking);
+
+    if (postWithThisTitle && currentPostId !== postWithThisTitle.id) {
+      throw new HttpError('Repeated title', HttpStatus.UNPROCESSABLE_ENTITY, [
+        'There is a post with this title already',
+      ]);
+    }
+  }
+
+  private async getCreatorInfo(creatorId: string): Promise<PostData['creator']> {
+    const creator = await this.authRepository.getUser('id', creatorId);
+
+    if (!creator) {
+      throw new InternalServerError('Incorrect creator id');
+    }
+
+    return { username: creator.username };
+  }
+
+  private canUserModify(creatorId: string, currentUser: IUser | null): boolean {
+    if (!currentUser) {
+      return false;
+    }
+
+    return currentUser.id === creatorId || [Role.ADMIN].includes(currentUser.role);
   }
 }

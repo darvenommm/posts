@@ -1,18 +1,15 @@
+import { inject, injectable } from 'inversify';
+
 import { TablesOwner } from '@/base/tablesOwner';
-import { getUniqueId } from '@/helpers';
 import { DATABASE, type IDatabase } from '@/database';
 import { TITLE_CONSTRAINTS, TEXT_CONSTRAINTS } from './constraints';
 
-import type { IContainer } from '@/container';
+export const POSTS_TABLES_OWNER = Symbol('PostsTablesOwner');
 
-export const POSTS_TABLES_OWNER = getUniqueId();
-
+@injectable()
 export class PostsTablesOwner extends TablesOwner {
-  private readonly database: IDatabase;
-
-  public constructor(container: IContainer) {
+  public constructor(@inject(DATABASE) private readonly database: IDatabase) {
     super();
-    this.database = container[DATABASE] as IDatabase;
   }
 
   public async create(): Promise<void> {
@@ -32,9 +29,5 @@ export class PostsTablesOwner extends TablesOwner {
       CREATE UNIQUE INDEX IF NOT EXISTS "indexPostsSlug" ON posts.posts USING BTREE (slug);
       CREATE INDEX IF NOT EXISTS "indexPostsCreatedAt" ON posts.posts USING BTREE ("createdAt");
     `);
-  }
-
-  public async clean(): Promise<void> {
-    await this.database.connection`DELETE FROM posts.posts;`;
   }
 }

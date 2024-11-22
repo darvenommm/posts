@@ -1,25 +1,8 @@
-import { createContainer } from 'awilix';
+import '@abraham/reflection';
 
-import { addBaseDependencies, addCompositeDependencies, LOGGER } from './container';
-import { addPostsDependencies } from './domains/posts';
-import { addAuthDependencies } from './domains/auth';
-import { APPLICATION } from './app';
+import { container } from './container';
+import { Application } from './app';
 
-import type { Application } from './app';
-import type { Logger } from 'winston';
+container.bind(Application).toSelf();
 
-const container = createContainer({ strict: true });
-addBaseDependencies(container);
-addAuthDependencies(container);
-addPostsDependencies(container);
-addCompositeDependencies(container);
-
-const logger = container.resolve<Logger>(LOGGER);
-
-try {
-  await container.resolve<Application>(APPLICATION).start();
-} catch (error) {
-  logger.error(error);
-} finally {
-  await container.dispose();
-}
+await container.get(Application).start();

@@ -1,11 +1,11 @@
+import { injectable } from 'inversify';
 import { isIP, isPort } from 'validator';
-
-import { getUniqueId } from '@/helpers';
 
 import type { IDatabaseSettings } from './types';
 
-export const DATABASE_SETTINGS = getUniqueId();
+export const DATABASE_SETTINGS = Symbol('DatabaseSettings');
 
+@injectable()
 export class DatabaseSettings implements IDatabaseSettings {
   public get host(): string {
     const host = process.env.DB_HOST;

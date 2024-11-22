@@ -1,14 +1,15 @@
+import { injectable } from 'inversify';
 import { checkSchema } from 'express-validator';
 import { isEmail } from 'validator';
 
 import { Validator } from '@/base/validator';
 import { USERNAME_CONSTRAINTS, PASSWORD_CONSTRAINTS } from '../constraints';
-import { getUniqueId } from '@/helpers';
 
 import type { ValidationChain } from 'express-validator';
 
-export const SIGN_IN_VALIDATOR = getUniqueId();
+export const SIGN_IN_VALIDATOR = Symbol('SignInValidator');
 
+@injectable()
 export class SignInValidator extends Validator {
   protected getValidators(): Iterable<ValidationChain> {
     return checkSchema({

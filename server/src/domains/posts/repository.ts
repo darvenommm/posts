@@ -1,37 +1,47 @@
-import { getUniqueId, createSlug } from '@/helpers';
+import { inject, injectable } from 'inversify';
+
+import { createSlug } from '@/helpers';
 import { DATABASE, type IDatabase } from '@/database';
 
-import type { IPost } from './types';
-import type { AddDTO, UpdateDTO } from './dtos';
-import type { IContainer } from '@/container';
-import type { PagesPaginationDTO } from './dtos';
+import type {
+  IPost,
+  CreatePostData,
+  UpdatePostData,
+  PageOptions,
+  CreateResult,
+  UpdateResult,
+} from './types';
 
-export const POSTS_REPOSITORY = getUniqueId();
+export const POSTS_REPOSITORY = Symbol('PostsRepository');
 
 type FieldName = 'id' | 'title' | 'slug';
 
 export interface IPostsRepository {
-  getPostByField: (field: FieldName, fieldValue: string) => Promise<IPost | null>;
+  getPostsByPages: (paginationSettings: PageOptions) => Promise<IPost[]>;
   getPostsCount: () => Promise<number>;
-  getPostsByPages: (paginationSettings: PagesPaginationDTO) => Promise<IPost[]>;
-  addPost: (postData: AddDTO, creatorId: string) => Promise<void>;
-  fullUpdatePostById: (id: string, newPostData: UpdateDTO) => Promise<void>;
-  removePostById: (id: string) => Promise<void>;
+
+  getPost: (field: FieldName, fieldValue: string) => Promise<IPost | null>;
+  createPost: (postData: CreatePostData) => Promise<CreateResult>;
+
+  fullUpdatePost: (
+    fieldName: FieldName,
+    fieldValue: string,
+    newPostData: UpdatePostData,
+  ) => Promise<UpdateResult>;
+
+  removePost: (fieldName: FieldName, fieldValue: string) => Promise<void>;
 }
 
+@injectable()
 export class PostsRepository implements IPostsRepository {
   private readonly SLUG_WORDS_COUNT = 15;
 
-  private readonly database: IDatabase;
+  public constructor(@inject(DATABASE) private readonly database: IDatabase) {}
 
-  public constructor(container: IContainer) {
-    this.database = container[DATABASE] as IDatabase;
-  }
-
-  public async getPostByField(field: string, value: string): Promise<IPost | null> {
+  public async getPost(field: FieldName, fieldValue: string): Promise<IPost | null> {
     const sql = this.database.connection;
     const posts = await sql<IPost[]>`
-      SELECT * FROM posts.posts WHERE ${sql(field)} = ${value} LIMIT 1;
+      SELECT * FROM posts.posts WHERE ${sql(field)} = ${fieldValue} LIMIT 1;
     `;
 
     return posts[0] ?? null;
@@ -45,7 +55,7 @@ export class PostsRepository implements IPostsRepository {
     return Number(postsCount[0].postsCount);
   }
 
-  public async getPostsByPages({ page, limit }: PagesPaginationDTO): Promise<IPost[]> {
+  public async getPostsByPages({ page, limit }: PageOptions): Promise<IPost[]> {
     return this.database.connection<IPost[]>`
       SELECT *
       FROM posts.posts
@@ -54,29 +64,41 @@ export class PostsRepository implements IPostsRepository {
     `;
   }
 
-  public async addPost(postData: AddDTO, creatorId: string): Promise<void> {
+  public async createPost(postData: CreatePostData): Promise<CreateResult> {
     const sql = this.database.connection;
-    const postDataForCreating: IPost = {
-      ...postData,
-      creatorId,
-      slug: createSlug(postData.title, this.SLUG_WORDS_COUNT),
-    } as const;
+
+    const slug = createSlug(postData.title, this.SLUG_WORDS_COUNT);
+    const postDataForCreating: IPost = { ...postData, slug } as const;
 
     await sql`INSERT INTO posts.posts ${sql(postDataForCreating)};`;
+
+    return { slug };
   }
 
-  public async fullUpdatePostById(id: string, newPostData: UpdateDTO): Promise<void> {
+  public async fullUpdatePost(
+    fieldName: FieldName,
+    fieldValue: string,
+    newPostData: UpdatePostData,
+  ): Promise<UpdateResult> {
     const sql = this.database.connection;
     const newSlug = createSlug(newPostData.title, this.SLUG_WORDS_COUNT);
+    const updatePostData: Pick<IPost, 'title' | 'text' | 'slug'> = {
+      ...newPostData,
+      slug: newSlug,
+    } as const;
 
     await sql`
       UPDATE posts.posts
-      SET ${sql({ ...newPostData, slug: newSlug })}
-      WHERE id = ${id};
+      SET ${sql(updatePostData)}
+      WHERE ${sql(fieldName)} = ${fieldValue};
     `;
+
+    return { newSlug };
   }
 
-  public async removePostById(id: string): Promise<void> {
-    await this.database.connection`DELETE FROM posts.posts WHERE id = ${id};`;
+  public async removePost(fieldName: string, fieldValue: string): Promise<void> {
+    const sql = this.database.connection;
+
+    await sql`DELETE FROM posts.posts WHERE ${sql(fieldName)} = ${fieldValue};`;
   }
 }

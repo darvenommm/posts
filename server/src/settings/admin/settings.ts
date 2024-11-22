@@ -1,9 +1,10 @@
-import { getUniqueId } from '@/helpers';
+import { injectable } from 'inversify';
 
 import type { IAdminSettings } from './types';
 
-export const ADMIN_SETTINGS = getUniqueId();
+export const ADMIN_SETTINGS = Symbol('AdminSettings');
 
+@injectable()
 export class AdminSettings implements IAdminSettings {
   public get username(): string {
     return process.env.ADMIN_USERNAME ?? 'admin';

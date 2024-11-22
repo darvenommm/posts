@@ -7,7 +7,7 @@ import type { Handler, Middleware } from '@/types';
 interface AddRouteOptions {
   method: HttpMethod;
   path: string;
-  handler: Handler;
+  handler: Handler<any>;
   handlerThis: unknown;
   middlewares?: Iterable<Middleware>;
 }

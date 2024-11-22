@@ -1,12 +1,11 @@
 import { default as bcrypt } from 'bcrypt';
+import { inject, injectable } from 'inversify';
 import { HttpStatus } from 'http-enums';
 import { isEmail } from 'validator';
 
 import { HttpError } from '@/base/errors';
-import { getUniqueId } from '@/helpers';
 import { AUTH_REPOSITORY } from './repository';
 
-import type { IContainer } from '@/container';
 import type { IAuthRepository } from './repository';
 import type { SignInDTO, SignUpDTO } from './dtos';
 
@@ -19,28 +18,25 @@ export interface IAuthService {
   signIn: (entryData: SignInDTO) => Promise<UserDataForEntry>;
 }
 
-export const AUTH_SERVICE = getUniqueId();
+export const AUTH_SERVICE = Symbol('AuthService');
 
+@injectable()
 export class AuthService implements IAuthService {
-  private readonly authRepository: IAuthRepository;
-
-  public constructor(container: IContainer) {
-    this.authRepository = container[AUTH_REPOSITORY] as IAuthRepository;
-  }
+  public constructor(@inject(AUTH_REPOSITORY) private readonly authRepository: IAuthRepository) {}
 
   public async signUp(addUserData: SignUpDTO): Promise<UserDataForEntry> {
-    const userById = await this.authRepository.getUserByField('id', addUserData.id);
+    const userById = await this.authRepository.getUser('id', addUserData.id);
     if (userById) {
       return { session: userById.session };
     }
 
     const [isExistedByEmail, isExistedByUsername] = await Promise.all([
-      this.authRepository.getUserByField('email', addUserData.email),
-      this.authRepository.getUserByField('username', addUserData.username),
+      this.authRepository.getUser('email', addUserData.email),
+      this.authRepository.getUser('username', addUserData.username),
     ]);
 
-    const isExistedUserWithThisEmailOrUsername = !!isExistedByEmail || !!isExistedByUsername;
-    if (isExistedUserWithThisEmailOrUsername) {
+    const isUserExistedWithEmailOrUsername = !!isExistedByEmail || !!isExistedByUsername;
+    if (isUserExistedWithEmailOrUsername) {
       throw new HttpError(
         'User is existed in the system with this email or username',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -57,8 +53,8 @@ export class AuthService implements IAuthService {
     const { emailOrUsername, password } = entryData;
 
     const user = await (isEmail(emailOrUsername)
-      ? this.authRepository.getUserByField('email', emailOrUsername)
-      : this.authRepository.getUserByField('username', emailOrUsername));
+      ? this.authRepository.getUser('email', emailOrUsername)
+      : this.authRepository.getUser('username', emailOrUsername));
 
     if (!user) {
       throw new HttpError('User is not existed in the database', HttpStatus.UNPROCESSABLE_ENTITY, [

@@ -123,7 +123,7 @@ export class PostsController extends Controller implements IPostsController {
     const payload = request.payload as UpdateDTO;
     const updateResult = await this.postsService.fullUpdatePostBySlug(slug, payload);
 
-    response.status(HttpStatus.NO_CONTENT).json(updateResult);
+    response.status(HttpStatus.OK).json(updateResult);
   }
 
   public async remove(request: Request<Params>, response: Response<void>): Promise<void> {

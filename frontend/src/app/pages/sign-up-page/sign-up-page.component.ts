@@ -64,7 +64,6 @@ export class SignUpPageComponent extends BaseForm<SignUpForm> {
     this.trimFieldsAndCheckValidation();
 
     if (this.formFields.valid) {
-      console.log('Submitted form:', this.formFields.getRawValue());
       this.sendUserData();
     }
   }

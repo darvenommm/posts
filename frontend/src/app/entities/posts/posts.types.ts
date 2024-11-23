@@ -34,3 +34,11 @@ export interface PostsPagesOptions {
   readonly pageNumber?: number;
   readonly limit?: number;
 }
+
+export interface CreateResult {
+  readonly slug: string;
+}
+
+export interface UpdateResult {
+  readonly newSlug: string;
+}

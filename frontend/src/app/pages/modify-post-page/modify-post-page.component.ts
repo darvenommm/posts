@@ -62,8 +62,6 @@ export class ModifyPostPageComponent extends BaseForm<UpdatePostForm> {
     this.trimFieldsAndCheckValidation();
 
     if (this.formFields.valid) {
-      console.log('Submitted form:', this.formFields.getRawValue());
-
       this.sendUserData();
     }
   }
@@ -87,9 +85,9 @@ export class ModifyPostPageComponent extends BaseForm<UpdatePostForm> {
     } as const;
 
     this.postsService.updatePost(this.slug(), updatePostDTO).subscribe({
-      next: (): void => {
+      next: (updateData): void => {
         this.isSubmitting = false;
-        this.router.navigateByUrl('/posts');
+        this.router.navigate(['/posts', updateData.newSlug]);
       },
       error: (error): void => {
         const internalError = ['Internal server error'];

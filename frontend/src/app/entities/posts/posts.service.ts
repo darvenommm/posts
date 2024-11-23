@@ -9,6 +9,8 @@ import {
   PostsPagesOptions,
   PostWithCanModify,
   UpdatePostDTO,
+  CreateResult,
+  UpdateResult,
 } from './posts.types';
 
 @Injectable()
@@ -26,11 +28,11 @@ export class PostsService {
     });
   }
 
-  public createPost(createPostDTO: CreatePostDTO): Observable<null> {
-    return this.http.post<null>(this.postsUrl, createPostDTO);
+  public createPost(createPostDTO: CreatePostDTO): Observable<CreateResult> {
+    return this.http.post<CreateResult>(this.postsUrl, createPostDTO);
   }
 
-  public updatePost(slug: string, updatePostDTO: UpdatePostDTO): Observable<null> {
-    return this.http.put<null>(`${this.postsUrl}/${slug}`, updatePostDTO);
+  public updatePost(slug: string, updatePostDTO: UpdatePostDTO): Observable<UpdateResult> {
+    return this.http.put<UpdateResult>(`${this.postsUrl}/${slug}`, updatePostDTO);
   }
 }

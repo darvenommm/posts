@@ -50,8 +50,6 @@ export class CreatePostPageComponent extends BaseForm<CreatePostForm> {
     this.trimFieldsAndCheckValidation();
 
     if (this.formFields.valid) {
-      console.log('Submitted form:', this.formFields.getRawValue());
-
       this.sendUserData();
     }
   }
@@ -76,9 +74,9 @@ export class CreatePostPageComponent extends BaseForm<CreatePostForm> {
     } as const;
 
     this.postsService.createPost(createPostDTO).subscribe({
-      next: (): void => {
+      next: (createResult): void => {
         this.isSubmitting = false;
-        this.router.navigateByUrl('/');
+        this.router.navigate(['/posts', createResult.slug]);
       },
       error: (error): void => {
         const internalError = ['Internal server error'];

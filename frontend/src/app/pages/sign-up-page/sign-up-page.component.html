@@ -2,11 +2,11 @@
   <h1 class="app-visually-hidden">Sign up form.</h1>
   <form class="form app-center__inner" [formGroup]="formFields" (submit)="onSubmit()">
     @if (formErrors.length) {
-    <div class="app-errors__errors">
-      @for (errorMessage of formErrors; track errorMessage) {
-      <p class="app-errors__error">{{ errorMessage }}</p>
-      }
-    </div>
+      <div class="app-errors__errors">
+        @for (errorMessage of formErrors; track errorMessage) {
+          <p class="app-errors__error">{{ errorMessage }}</p>
+        }
+      </div>
     }
     <div class="control-container">
       <div class="app-control">
@@ -21,9 +21,10 @@
       </div>
       <div class="app-errors">
         @if (hasError('email', 'required')) {
-        <p class="app-errors__error">Email is required</p>
-        } @if (hasError('email', 'pattern')) {
-        <p class="app-errors__error">Invalid email format</p>
+          <p class="app-errors__error">Email is required</p>
+        }
+        @if (hasError('email', 'pattern')) {
+          <p class="app-errors__error">Invalid email format</p>
         }
       </div>
     </div>
@@ -40,19 +41,22 @@
       </div>
       <div class="app-errors">
         @if (hasError('username', 'required')) {
-        <p class="app-errors__error">Username is required</p>
-        } @if (hasError('username', 'minlength')) {
-        <p class="app-errors__error">
-          Username must be at least {{ USERNAME_CONSTRAINTS.minLength }} characters
-        </p>
-        } @if (hasError('username', 'maxlength')) {
-        <p class="app-errors__error">
-          Username cannot exceed {{ USERNAME_CONSTRAINTS.maxLength }} characters
-        </p>
-        } @if (hasError('username', 'pattern')) {
-        <p class="app-errors__error">
-          Username contains invalid characters ({{ USERNAME_CONSTRAINTS.beautyPattern }})
-        </p>
+          <p class="app-errors__error">Username is required</p>
+        }
+        @if (hasError('username', 'minlength')) {
+          <p class="app-errors__error">
+            Username must be at least {{ USERNAME_CONSTRAINTS.minLength }} characters
+          </p>
+        }
+        @if (hasError('username', 'maxlength')) {
+          <p class="app-errors__error">
+            Username cannot exceed {{ USERNAME_CONSTRAINTS.maxLength }} characters
+          </p>
+        }
+        @if (hasError('username', 'pattern')) {
+          <p class="app-errors__error">
+            Username contains invalid characters ({{ USERNAME_CONSTRAINTS.beautyPattern }})
+          </p>
         }
       </div>
     </div>
@@ -69,15 +73,17 @@
       </div>
       <div class="app-errors">
         @if (hasError('password', 'required')) {
-        <p class="app-errors__error">Password is required</p>
-        } @if (hasError('password', 'minlength')) {
-        <p class="app-errors__error">
-          Password must be at least {{ PASSWORD_CONSTRAINTS.minLength }} characters
-        </p>
-        } @if (hasError('password', 'maxlength')) {
-        <p class="app-errors__error">
-          Password cannot exceed {{ PASSWORD_CONSTRAINTS.maxLength }} characters
-        </p>
+          <p class="app-errors__error">Password is required</p>
+        }
+        @if (hasError('password', 'minlength')) {
+          <p class="app-errors__error">
+            Password must be at least {{ PASSWORD_CONSTRAINTS.minLength }} characters
+          </p>
+        }
+        @if (hasError('password', 'maxlength')) {
+          <p class="app-errors__error">
+            Password cannot exceed {{ PASSWORD_CONSTRAINTS.maxLength }} characters
+          </p>
         }
       </div>
     </div>

@@ -1,41 +1,47 @@
 <div class="posts-container">
   @if (postsPages.isLoading()) {
-  <p>Loading...</p>
-  } @if (postsPages.error()) {
-  <p>Server error</p>
-  } @if (postsPages.hasValue()) { @if (!posts().length) {
-  <p>There aren't posts</p>
-  } @else {
-  <ul class="posts">
-    @for (post of posts(); track post.id) {
-    <li class="post">
-      <p class="title"><span class="field-title">Title:</span> {{ post.title }}</p>
-      <p class="text"><span class="field-title">Text:</span> {{ post.text }}</p>
-      <p class="creator"><span class="field-title">Creator:</span> {{ post.creator.username }}</p>
-      <a class="app-link link" [routerLink]="['/posts', post.slug]">Go to post</a>
-    </li>
+    <p>Loading...</p>
+  }
+  @if (postsPages.error()) {
+    <p>Server error</p>
+  }
+  @if (postsPages.hasValue()) {
+    @if (!posts().length) {
+      <p>There aren't posts</p>
+    } @else {
+      <ul class="posts">
+        @for (post of posts(); track post.id) {
+          <li class="post">
+            <p class="title"><span class="field-title">Title:</span> {{ post.title }}</p>
+            <p class="text"><span class="field-title">Text:</span> {{ post.text }}</p>
+            <p class="creator">
+              <span class="field-title">Creator:</span> {{ post.creator.username }}
+            </p>
+            <a class="app-link link" [routerLink]="['/posts', post.slug]">Go to post</a>
+          </li>
+        }
+      </ul>
     }
-  </ul>
-  }}
+  }
 </div>
 @if (postsPages.hasValue() && posts().length) {
-<div class="controls">
-  <button
-    class="app-button"
-    type="button"
-    (click)="handleDecrementClick()"
-    [disabled]="currentPage() <= 1"
-  >
-    -
-  </button>
-  <p>Pages: {{ currentPage() }} : {{ pagesCount() }}</p>
-  <button
-    class="app-button"
-    type="button"
-    (click)="handleIncrementClick()"
-    [disabled]="currentPage() >= pagesCount()"
-  >
-    +
-  </button>
-</div>
+  <div class="controls">
+    <button
+      class="app-button"
+      type="button"
+      (click)="handleDecrementClick()"
+      [disabled]="currentPage() <= 1"
+    >
+      -
+    </button>
+    <p>Pages: {{ currentPage() }} : {{ pagesCount() }}</p>
+    <button
+      class="app-button"
+      type="button"
+      (click)="handleIncrementClick()"
+      [disabled]="currentPage() >= pagesCount()"
+    >
+      +
+    </button>
+  </div>
 }

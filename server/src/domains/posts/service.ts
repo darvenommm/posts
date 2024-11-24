@@ -46,7 +46,7 @@ export class PostsService implements IPostsService {
       ]);
     }
 
-    const { creatorId, ...otherPostsParameters } = post;
+    const { creatorId: _, ...otherPostsParameters } = post;
 
     return {
       ...otherPostsParameters,

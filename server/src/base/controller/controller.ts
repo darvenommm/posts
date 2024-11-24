@@ -7,6 +7,7 @@ import type { Handler, Middleware } from '@/types';
 interface AddRouteOptions {
   method: HttpMethod;
   path: string;
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   handler: Handler<any>;
   handlerThis: unknown;
   middlewares?: Iterable<Middleware>;

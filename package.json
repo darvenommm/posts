@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "linter:server": "eslint ./server",
+    "linter:frontend": "eslint ./frontend/src",
+    "linter": "bun run linter:server && bun run linter:frontend",
+    "format:server": "prettier ./server -c -w",
+    "format:frontend": "prettier ./frontend/src -c -w",
+    "format": "bun run format:server && bun run format:frontend"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.15.0"
+  }
+}

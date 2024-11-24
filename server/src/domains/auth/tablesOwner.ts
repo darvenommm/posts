@@ -11,11 +11,9 @@ import { Role } from './types';
 import { DATABASE, type IDatabase } from '@/database';
 import { ADMIN_SETTINGS, type IAdminSettings } from '@/settings/admin';
 import { EXTRA_SETTINGS, type IExtraSettings } from '@/settings/extra';
-import { LOGGER } from '@/constants';
 
 import type { UserCreatingData } from './types';
 import type { PoolClient } from 'pg';
-import type { ILogger } from '@/logger';
 
 @injectable()
 export class AuthTablesOwner extends TablesOwner {

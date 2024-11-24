@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response, NextFunction } from 'express';
 
 export type Handler<ResponseData = any> = (

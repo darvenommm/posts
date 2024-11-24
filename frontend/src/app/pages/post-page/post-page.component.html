@@ -1,13 +1,16 @@
 <div class="container">
   @if (post.isLoading()) {
-  <p>Loading...</p>
-  } @if (post.error()) {
-  <p>Server error!</p>
-  } @if (post.hasValue()) {
-  <p><span class="field-title">Title:</span> {{ post.value()!.title }}</p>
-  <p><span class="field-title">Text:</span> {{ post.value()!.text }}</p>
-  <p><span class="field-title">Creator:</span> {{ post.value()!.creator.username }}</p>
-  @if (post.value()!.canModify) {
-  <a class="app-link" [routerLink]="['/posts', post.value()!.slug, 'modify']">Modify</a>
-  } }
+    <p>Loading...</p>
+  }
+  @if (post.error()) {
+    <p>Server error!</p>
+  }
+  @if (post.hasValue()) {
+    <p><span class="field-title">Title:</span> {{ post.value()!.title }}</p>
+    <p><span class="field-title">Text:</span> {{ post.value()!.text }}</p>
+    <p><span class="field-title">Creator:</span> {{ post.value()!.creator.username }}</p>
+    @if (post.value()!.canModify) {
+      <a class="app-link" [routerLink]="['/posts', post.value()!.slug, 'modify']">Modify</a>
+    }
+  }
 </div>

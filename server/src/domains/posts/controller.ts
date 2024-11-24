@@ -18,6 +18,7 @@ import type { CreateDTO, UpdateDTO } from './dtos';
 import type { Validator } from '@/base/validator';
 import type { Guard } from '@/base/guard';
 import type { Handler } from '@/types';
+import { InternalServerError } from '@/base/errors';
 
 export const POSTS_CONTROLLER = Symbol('PostsController');
 
@@ -136,6 +137,10 @@ export class PostsController extends Controller implements IPostsController {
   }
 
   private getCurrentUser(request: Request<unknown>): IUser {
-    return request.user!;
+    if (!request.user) {
+      throw new InternalServerError('Not found user in request');
+    }
+
+    return request.user;
   }
 }

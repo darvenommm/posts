@@ -54,9 +54,9 @@ export class AuthService implements IAuthService {
   public async signIn(entryData: SignInDTO): Promise<UserDataForEntry> {
     const { emailOrUsername, password } = entryData;
 
-    const user = await (isEmail(emailOrUsername)
-      ? this.authRepository.getUser('email', emailOrUsername)
-      : this.authRepository.getUser('username', emailOrUsername));
+    const user = await (isEmail(emailOrUsername) ?
+      this.authRepository.getUser('email', emailOrUsername)
+    : this.authRepository.getUser('username', emailOrUsername));
 
     if (!user) {
       throw new HttpError('User is not existed in the database', HttpStatus.UNPROCESSABLE_ENTITY, [

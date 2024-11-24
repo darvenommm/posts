@@ -1,15 +1,15 @@
 // styles
-@use "./common/variables";
-@use "./common/theme";
-@use "./common/fonts";
-@use "./common/global";
+@use './common/variables';
+@use './common/theme';
+@use './common/fonts';
+@use './common/global';
 
 // components
-@use "./components/button/button";
-@use "./components/link/link";
-@use "./components/input/input";
-@use "./components/container/container";
-@use "./components/center/center";
-@use "./components/control/control";
-@use "./components/errors/errors";
-@use "./components/visually-hidden/visually-hidden";
+@use './components/button/button';
+@use './components/link/link';
+@use './components/input/input';
+@use './components/container/container';
+@use './components/center/center';
+@use './components/control/control';
+@use './components/errors/errors';
+@use './components/visually-hidden/visually-hidden';

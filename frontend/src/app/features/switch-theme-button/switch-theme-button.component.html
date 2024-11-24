@@ -2,11 +2,11 @@
   <p class="text">{{ currentTheme() | titlecase }}</p>
   <ul class="buttons">
     @for (theme of themes; track theme) {
-    <li>
-      <button class="app-button" type="button" (click)="updateTheme(theme)">
-        {{ theme | titlecase }}
-      </button>
-    </li>
+      <li>
+        <button class="app-button" type="button" (click)="updateTheme(theme)">
+          {{ theme | titlecase }}
+        </button>
+      </li>
     }
   </ul>
 </div>

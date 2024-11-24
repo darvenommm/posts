@@ -19,11 +19,11 @@ body {
   @include dark-variables();
 }
 
-body[data-theme="dark"] {
+body[data-theme='dark'] {
   @include dark-variables();
 }
 
-body[data-theme="light"] {
+body[data-theme='light'] {
   @include light-variables();
 }
 

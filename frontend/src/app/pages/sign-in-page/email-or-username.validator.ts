@@ -5,7 +5,7 @@ import { EMAIL_CONSTRAINTS, USERNAME_CONSTRAINTS } from '@entities/auth';
 export const emailOrUsernameValidator: ValidatorFn = (
   control: AbstractControl<string, string>,
 ): ValidationErrors | null => {
-  if (Boolean(~control.value.indexOf('@'))) {
+  if (~control.value.indexOf('@')) {
     return Validators.pattern(EMAIL_CONSTRAINTS.pattern)(control);
   }
 

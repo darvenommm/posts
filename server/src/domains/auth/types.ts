@@ -14,7 +14,7 @@ export interface IUser {
 }
 
 export interface UserCreatingData
-  extends Pick<IUser, 'email' | 'username' | 'hashedPassword' | 'role'> {}
+  extends Pick<IUser, 'id' | 'email' | 'username' | 'hashedPassword' | 'role'> {}
 
 export interface IRole {
   readonly name: string;

@@ -1,11 +1,15 @@
+import '@abraham/reflection';
+
 import { default as bcrypt } from 'bcrypt';
+import { default as format } from 'pg-format';
 import { inject, injectable } from 'inversify';
 
 import { InternalServerError } from '@/base/errors';
 import { DATABASE, type IDatabase } from '@/database';
 import { EXTRA_SETTINGS, type IExtraSettings } from '@/settings/extra';
-
 import { Role, type IUser, type UserCreatingData } from './types';
+
+import type { QueryResult } from 'pg';
 import type { SignUpDTO } from './dtos';
 
 type FieldName = 'id' | 'email' | 'username' | 'session';
@@ -24,20 +28,29 @@ export class AuthRepository implements IAuthRepository {
     @inject(EXTRA_SETTINGS) private readonly extraSettings: IExtraSettings,
   ) {}
 
-  public async addUser({ email, username, password }: SignUpDTO): Promise<IUser> {
-    const sql = this.database.connection;
+  public async addUser({ id, email, username, password }: SignUpDTO): Promise<IUser> {
     const hashedPassword = await bcrypt.hash(password, this.extraSettings.saltRounds);
     const userData: UserCreatingData = {
+      id,
       email,
       username,
       hashedPassword,
       role: Role.USER,
     } as const;
+    const parameters = [
+      [userData.id, userData.email, userData.username, userData.hashedPassword, userData.role],
+    ];
 
-    await sql`INSERT INTO posts.users ${sql(userData)}`;
+    await this.database.useConnection(async (connection) => {
+      await connection.query(
+        format(
+          'INSERT INTO posts.users (id, email, username, "hashedPassword", role) VALUES %L',
+          parameters,
+        ),
+      );
+    });
 
     const user = await this.getUser('email', email);
-
     if (!user) {
       throw new InternalServerError('User is not created!');
     }
@@ -46,15 +59,12 @@ export class AuthRepository implements IAuthRepository {
   }
 
   public async getUser(fieldName: FieldName, fieldValue: string): Promise<IUser | null> {
-    const sql = this.database.connection;
+    const users = await this.database.useConnection<QueryResult<IUser>>(async (connection) => {
+      return connection.query<IUser>(`SELECT * FROM posts.users WHERE ${fieldName} = $1 LIMIT 1`, [
+        fieldValue,
+      ]);
+    });
 
-    const selectResult = await sql<IUser[]>`
-      SELECT *
-      FROM posts.users
-      WHERE ${sql(fieldName)} = ${fieldValue}
-      LIMIT 1;
-    `;
-
-    return selectResult[0] ?? null;
+    return users.rows[0] ?? null;
   }
 }

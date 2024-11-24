@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { inject, injectable } from 'inversify';
 import { HttpMethod, HttpStatus } from 'http-enums';
 
@@ -12,7 +14,7 @@ import { CREATOR_OR_ADMIN_GUARD } from './guard/creatorOrAdmin';
 import type { Request, Response } from 'express';
 import type { PostData, PageResult, CreateResult, UpdateResult } from './types';
 import type { PagesPaginationDTO } from './dtos';
-import type { AddDTO, UpdateDTO } from './dtos';
+import type { CreateDTO, UpdateDTO } from './dtos';
 import type { Validator } from '@/base/validator';
 import type { Guard } from '@/base/guard';
 import type { Handler } from '@/types';
@@ -111,7 +113,7 @@ export class PostsController extends Controller implements IPostsController {
   }
 
   public async create(request: Request, response: Response<CreateResult>): Promise<void> {
-    const payload = request.payload as AddDTO;
+    const payload = request.payload as CreateDTO;
     const creator = this.getCurrentUser(request);
     const createResult = await this.postsService.createPost({ ...payload, creatorId: creator.id });
 

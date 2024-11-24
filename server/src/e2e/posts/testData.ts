@@ -1,14 +1,14 @@
-import { v4 as getUUID } from 'uuid';
+import { v4 as createUUID } from 'uuid';
 
-import type { AddDTO, UpdateDTO } from '@/domains/posts/dtos';
+import type { CreateDTO, UpdateDTO } from '@/domains/posts';
 
-export const addDTO: AddDTO = {
-  id: getUUID(),
-  text: 'some title jdfk',
-  title: 'some text slkdfjsdlkfj sdfklj',
-};
+export const createDTO: CreateDTO = {
+  id: createUUID(),
+  title: 'first post title',
+  text: 'alksdjflkasdfj aklsfd jlkasdf jlkasdf jklasdfj klasdfjasdklf jfd  ds da fslkj',
+} as const;
 
 export const updateDTO: UpdateDTO = {
-  title: 'some title jdfk sdf',
-  text: 'some text slkdfjsdlkfj sdfklj',
-};
+  title: 'first post title',
+  text: 'alksdjflkasdfj aklsfd jlkasdf jlkasdf jklasdfj klasdfjasdklf jfd  ds da fslkj sdf',
+} as const;

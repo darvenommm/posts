@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { injectable } from 'inversify';
 
 import type { IAdminSettings } from './types';

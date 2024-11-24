@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { injectable } from 'inversify';
 import { checkSchema } from 'express-validator';
 import { isEmail } from 'validator';

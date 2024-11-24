@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { inject, injectable } from 'inversify';
 import { HttpStatus } from 'http-enums';
 
@@ -44,8 +46,10 @@ export class PostsService implements IPostsService {
       ]);
     }
 
+    const { creatorId, ...otherPostsParameters } = post;
+
     return {
-      ...post,
+      ...otherPostsParameters,
       creator: await this.getCreatorInfo(post.creatorId),
       canModify: this.canUserModify(post.creatorId, currentUser),
     };
@@ -64,8 +68,10 @@ export class PostsService implements IPostsService {
 
     const posts = await Promise.all(
       rawPosts.map(async (rawPost): Promise<PostData> => {
+        const { creatorId, ...otherPostsParameters } = rawPost;
+
         return {
-          ...rawPost,
+          ...otherPostsParameters,
           creator: await this.getCreatorInfo(rawPost.creatorId),
           canModify: this.canUserModify(rawPost.creatorId, currentUser),
         };
@@ -112,19 +118,6 @@ export class PostsService implements IPostsService {
     const { id: postId } = await this.getPostBySlug(slug);
 
     return this.postsRepository.removePost('id', postId);
-  }
-
-  private async checkTitleNotExistedByOthers(
-    currentPostId: string,
-    titleForChecking: string,
-  ): Promise<never | void> {
-    const postWithThisTitle = await this.postsRepository.getPost('title', titleForChecking);
-
-    if (postWithThisTitle && currentPostId !== postWithThisTitle.id) {
-      throw new HttpError('Repeated title', HttpStatus.UNPROCESSABLE_ENTITY, [
-        'There is a post with this title already',
-      ]);
-    }
   }
 
   private async getCreatorInfo(creatorId: string): Promise<PostData['creator']> {

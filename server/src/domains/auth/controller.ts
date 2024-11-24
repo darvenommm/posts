@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { default as ms } from 'ms';
 import { inject, injectable } from 'inversify';
 import { HttpMethod, HttpStatus } from 'http-enums';

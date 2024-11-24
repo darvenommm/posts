@@ -1,6 +1,6 @@
 import { ContainerModule } from 'inversify';
 
-import { CONTROLLERS, MIDDLEWARES } from '@/container';
+import { CONTROLLERS, MIDDLEWARES } from '@/constants';
 import { TABLES_OWNERS } from '@/database';
 import { AuthMiddleware } from './middleware';
 import { AuthTablesOwner } from './tablesOwner';

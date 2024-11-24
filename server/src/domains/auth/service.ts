@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { default as bcrypt } from 'bcrypt';
 import { inject, injectable } from 'inversify';
 import { HttpStatus } from 'http-enums';

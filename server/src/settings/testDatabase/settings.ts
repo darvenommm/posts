@@ -1,5 +1,6 @@
-import { injectable } from 'inversify';
+import '@abraham/reflection';
 
+import { injectable } from 'inversify';
 import { isIP, isPort } from 'validator';
 
 import type { IDatabaseSettings } from '../database/types';

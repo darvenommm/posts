@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { inject, injectable } from 'inversify';
 
 import { Guard } from '@/base/guard';
@@ -22,7 +24,7 @@ export class CreatorOrAdminGuard extends Guard {
       throw new InternalServerError('Not found user in request');
     }
 
-    const postSlug = request.path.split('/').at(-1) as string;
+    const postSlug = decodeURIComponent(request.path.split('/').at(-1) as string);
     const post = await this.postsService.getPostBySlug(postSlug);
 
     if (post.creator.username !== currentUser.username && currentUser.role !== Role.ADMIN) {

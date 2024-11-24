@@ -1,6 +1,6 @@
 import { ContainerModule } from 'inversify';
 
-import { CONTROLLERS } from '@/container';
+import { CONTROLLERS } from '@/constants';
 import { TABLES_OWNERS } from '@/database';
 import { PostsController, type IPostsController } from './controller';
 import { PostsTablesOwner } from './tablesOwner';

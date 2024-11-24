@@ -1,8 +1,14 @@
 import '@abraham/reflection';
 
-import { container } from './container';
-import { Application } from './app';
+import { getContainer } from './container';
+import { APPLICATION, type IApplication } from './app';
+import { authModule } from './domains/auth';
+import { postsModule } from './domains/posts';
+import { DATABASE_TABLES_OWNER } from './database';
+import type { TablesOwner } from './base/tablesOwner';
 
-container.bind(Application).toSelf();
+const container = getContainer();
+container.load(authModule, postsModule);
 
-await container.get(Application).start();
+await container.get<TablesOwner>(DATABASE_TABLES_OWNER).create();
+await container.get<IApplication>(APPLICATION).start();

@@ -30,7 +30,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // decorators
-    "types": ["reflect-metadata"],
+    "types": ["reflect-metadata", "bun"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   }

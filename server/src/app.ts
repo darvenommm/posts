@@ -1,31 +1,37 @@
+import '@abraham/reflection';
+
 import { default as express } from 'express';
 import { default as cors } from 'cors';
 import { default as cookieParser } from 'cookie-parser';
 import { default as helmet } from 'helmet';
-import { inject, injectable, multiInject } from 'inversify';
+import { inject, injectable, multiInject, optional } from 'inversify';
 import { HttpStatus } from 'http-enums';
 
 import { InternalServerError, HttpError } from './base/errors';
 import { Controller } from './base/controller';
 import { SERVER_SETTINGS, type IServerSettings } from './settings/server';
 import { EXTRA_SETTINGS, type IExtraSettings } from './settings/extra';
-import { CONTROLLERS, LOGGER, MIDDLEWARES } from './container';
-import { DATABASE_TABLES_OWNER } from './database';
+import { CONTROLLERS, LOGGER, MIDDLEWARES } from './constants';
 
 import type { Express, Request, Response, NextFunction } from 'express';
 import type { Errors } from './base/errors';
 import type { Middleware } from './base/middleware';
-import type { TablesOwner } from './base/tablesOwner';
 import type { ILogger } from './logger';
 
+export const APPLICATION = Symbol('Application');
+
+export interface IApplication {
+  readonly server: Express;
+  start: () => Promise<void>;
+}
+
 @injectable()
-export class Application {
+export class Application implements IApplication {
   private readonly _server: Express;
 
   public constructor(
-    @multiInject(CONTROLLERS) private readonly controllers: Iterable<Controller>,
-    @multiInject(MIDDLEWARES) private readonly middlewares: Iterable<Middleware>,
-    @inject(DATABASE_TABLES_OWNER) private readonly databaseTablesOwner: TablesOwner,
+    @multiInject(CONTROLLERS) @optional() private readonly controllers: Iterable<Controller> = [],
+    @multiInject(MIDDLEWARES) @optional() private readonly middlewares: Iterable<Middleware> = [],
     @inject(SERVER_SETTINGS) private readonly serverSettings: IServerSettings,
     @inject(EXTRA_SETTINGS) private readonly extraSettings: IExtraSettings,
     @inject(LOGGER) private readonly logger: ILogger,
@@ -40,8 +46,6 @@ export class Application {
   public async start(): Promise<void> {
     try {
       const { port, host } = this.serverSettings;
-
-      await this.databaseTablesOwner.create();
 
       this.server.listen(port, host, (): void => {
         this.logger.info(`The server was started on ${port} port`);
@@ -93,7 +97,7 @@ export class Application {
     }
 
     if (error instanceof HttpError) {
-      this.logger.info(error);
+      this.logger.error(error);
       response.status(error.status).json({ errors: error.errors });
       return;
     }

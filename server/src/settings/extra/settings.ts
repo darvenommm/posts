@@ -1,3 +1,5 @@
+import '@abraham/reflection';
+
 import { injectable } from 'inversify';
 import { isInt } from 'validator';
 

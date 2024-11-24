@@ -1,27 +1,45 @@
-import { default as postgres } from 'postgres';
+import '@abraham/reflection';
+
+import { Pool } from 'pg';
 import { inject, injectable } from 'inversify';
 
 import { DATABASE_SETTINGS } from '@/settings/database';
 
-import type { Sql } from 'postgres';
+import type { PoolClient } from 'pg';
 import type { IDatabaseSettings } from '@/settings/database';
 
+export type UseConnectionCallback<T> = (client: PoolClient) => Promise<T>;
+
 export interface IDatabase {
-  readonly connection: Sql;
+  getConnection: () => Promise<PoolClient>;
+  releaseConnection: (connection: PoolClient) => void;
+  useConnection: <T = void>(callback: UseConnectionCallback<T>) => Promise<T>;
 }
 
 export const DATABASE = Symbol('Database');
 
 @injectable()
 export class Database implements IDatabase {
-  private readonly _connection: Sql;
+  private readonly pool: Pool;
 
   public constructor(@inject(DATABASE_SETTINGS) databaseSettings: IDatabaseSettings) {
-    const { host, port, username, password, name: database } = databaseSettings;
-    this._connection = postgres({ host, port, username, password, database });
+    const { host, port, username: user, password, name: database } = databaseSettings;
+    this.pool = new Pool({ host, port, user, password, database });
   }
 
-  public get connection(): Sql {
-    return this._connection;
+  public async getConnection(): Promise<PoolClient> {
+    return this.pool.connect();
+  }
+
+  public releaseConnection(connection: PoolClient): void {
+    connection.release();
+  }
+
+  public async useConnection<T = void>(callback: UseConnectionCallback<T>): Promise<T> {
+    const connection = await this.getConnection();
+    const result = await callback(connection);
+    this.releaseConnection(connection);
+
+    return result;
   }
 }

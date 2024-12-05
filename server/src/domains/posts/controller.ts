@@ -99,7 +99,7 @@ export class PostsController extends Controller implements IPostsController {
 
   public async getOne(request: Request<Params>, response: Response<PostData>): Promise<void> {
     const { slug } = request.params;
-    const currentUser = this.getCurrentUser(request);
+    const currentUser = this.getCurrentUserOrNull(request);
     const postData = await this.postsService.getPostBySlug(slug, currentUser);
 
     response.status(HttpStatus.OK).json(postData);
@@ -107,7 +107,7 @@ export class PostsController extends Controller implements IPostsController {
 
   public async getPage(request: Request, response: Response<PageResult>): Promise<void> {
     const paginationOptions = request.payload as PagesPaginationDTO;
-    const currentUser = this.getCurrentUser(request);
+    const currentUser = this.getCurrentUserOrNull(request);
     const postsPage = await this.postsService.getPostsPages(paginationOptions, currentUser);
 
     response.status(HttpStatus.OK).json(postsPage);
@@ -136,11 +136,17 @@ export class PostsController extends Controller implements IPostsController {
     response.status(HttpStatus.NO_CONTENT).end();
   }
 
+  private getCurrentUserOrNull(request: Request<unknown>): IUser | null {
+    return request.user;
+  }
+
   private getCurrentUser(request: Request<unknown>): IUser {
-    if (!request.user) {
+    const user = this.getCurrentUserOrNull(request);
+
+    if (!user) {
       throw new InternalServerError('Not found user in request');
     }
 
-    return request.user;
+    return user
   }
 }

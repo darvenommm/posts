@@ -15,7 +15,6 @@ interface UpdatePostForm {
 @Component({
   selector: 'app-modify-post-page',
   imports: [ReactiveFormsModule],
-  providers: [PostsService],
   templateUrl: './modify-post-page.component.html',
   styleUrl: './modify-post-page.component.scss',
 })

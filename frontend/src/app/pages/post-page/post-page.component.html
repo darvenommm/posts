@@ -6,11 +6,15 @@
     <p>Server error!</p>
   }
   @if (post.hasValue()) {
-    <p><span class="field-title">Title:</span> {{ post.value()!.title }}</p>
-    <p><span class="field-title">Text:</span> {{ post.value()!.text }}</p>
-    <p><span class="field-title">Creator:</span> {{ post.value()!.creator.username }}</p>
-    @if (post.value()!.canModify) {
-      <a class="app-link" [routerLink]="['/posts', post.value()!.slug, 'modify']">Modify</a>
+    @let postData = post.value()!;
+    <p><span class="field-title">Title:</span> {{ postData.title }}</p>
+    <p><span class="field-title">Text:</span> {{ postData.text }}</p>
+    <p><span class="field-title">Creator:</span> {{ postData.creator.username }}</p>
+    @if (postData.canModify) {
+      <div class="actions">
+        <a class="app-link" [routerLink]="['/posts', postData.slug, 'modify']">Modify</a>
+        <button class="app-button" type="button" (click)="deletePost(postData.slug)">Delete</button>
+      </div>
     }
   }
 </div>

@@ -2,13 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 
-import { Post, PostsPagesOptions, PostsPages, PostsService } from '@entities/posts';
+import { PostsPagesOptions, PostsPages, PostsService, PostWithCanModify } from '@entities/posts';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-posts-list',
   imports: [RouterLink],
-  providers: [PostsService],
   templateUrl: './posts-list.component.html',
   styleUrl: './posts-list.component.scss',
 })
@@ -22,13 +21,17 @@ export class PostsListComponent {
     loader: ({ request: options }): Observable<PostsPages> => this.postsService.getPosts(options),
   });
 
-  public readonly posts = computed((): Post[] =>
+  public readonly posts = computed((): PostWithCanModify[] =>
     this.postsPages.hasValue() ? this.postsPages.value()!.posts : [],
   );
 
   public readonly pagesCount = computed((): number =>
     this.postsPages.hasValue() ? this.postsPages.value()!.pagesCount : 1,
   );
+
+  public constructor() {
+    this.postsService.$requireAllUpdateEvent.subscribe((): void => void this.postsPages.reload());
+  }
 
   public handleDecrementClick(): void {
     if (this.currentPage() <= 1) {
@@ -44,5 +47,12 @@ export class PostsListComponent {
     }
 
     this.currentPage.update((previous): number => previous + 1);
+  }
+
+  public deletePost(slug: string): void {
+    this.postsService.deletePost(slug).subscribe({
+      next: (): void => void this.postsPages.reload(),
+      error: console.error,
+    });
   }
 }

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { environment } from '@env/environment';
 import {
@@ -13,10 +13,14 @@ import {
   UpdateResult,
 } from './posts.types';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class PostsService {
   private readonly http = inject(HttpClient);
   private readonly postsUrl = `${environment.apiUrl}/posts`;
+
+  public $requireAllUpdateEvent = new Subject<void>();
 
   public getPost(postSlug: string): Observable<PostWithCanModify> {
     return this.http.get<PostWithCanModify>(`${this.postsUrl}/${postSlug}`);
@@ -34,5 +38,9 @@ export class PostsService {
 
   public updatePost(slug: string, updatePostDTO: UpdatePostDTO): Observable<UpdateResult> {
     return this.http.put<UpdateResult>(`${this.postsUrl}/${slug}`, updatePostDTO);
+  }
+
+  public deletePost(slug: string): Observable<void> {
+    return this.http.delete<void>(`${this.postsUrl}/${slug}`);
   }
 }

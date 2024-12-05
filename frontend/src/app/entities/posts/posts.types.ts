@@ -27,7 +27,7 @@ export interface UpdatePostDTO {
 
 export interface PostsPages {
   readonly pagesCount: number;
-  readonly posts: Post[];
+  readonly posts: PostWithCanModify[];
 }
 
 export interface PostsPagesOptions {

@@ -147,6 +147,6 @@ export class PostsController extends Controller implements IPostsController {
       throw new InternalServerError('Not found user in request');
     }
 
-    return user
+    return user;
   }
 }

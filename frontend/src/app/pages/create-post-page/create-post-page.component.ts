@@ -17,7 +17,6 @@ interface CreatePostForm {
 @Component({
   selector: 'app-create-post-page',
   imports: [ReactiveFormsModule],
-  providers: [PostsService],
   templateUrl: './create-post-page.component.html',
   styleUrl: './create-post-page.component.scss',
 })

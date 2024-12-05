@@ -42,8 +42,10 @@
   margin: 0;
 }
 
-.link {
-  align-self: start;
+.links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .text {
@@ -54,7 +56,17 @@
 
 .controls {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
+}
+
+.controls-inner {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  background-color: var(--secondary-bg);
+  border-radius: 20px;
+
+  padding: 10px;
 }
